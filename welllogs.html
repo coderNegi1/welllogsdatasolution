@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Well Log Data Solution | Enterprise Subsurface Vectorization & LAS Digitizing</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        petroleum: {
+                            950: '#060b13',
+                            900: '#0d131f',
+                            850: '#111b2d',
+                            800: '#17243b',
+                            700: '#233658',
+                            600: '#344c77'
+                        },
+                        cyanacc: {
+                            DEFAULT: '#00f2fe',
+                            glow: '#4facfe',
+                            dark: '#00b8d4'
+                        },
+                        amberacc: {
+                            DEFAULT: '#f5a623',
+                            light: '#ffc107',
+                            dark: '#d38300'
+                        },
+                        loggreen: '#00e676',
+                        logred: '#ff1744',
+                        logblue: '#29b6f6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- html2pdf for Quote Exporting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Grid Overlay & Canvas Textures */
+        .seismic-grid-bg {
+            background-image: 
+                linear-gradient(to right, rgba(0, 242, 254, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 242, 254, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        .log-track-paper {
+            background-color: #080d16;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 242, 254, 0.08) 1px, transparent 1px);
+            background-size: 10px 10px;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(17, 27, 45, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 242, 254, 0.15);
+        }
+        
+        .glass-card-hover:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(0, 242, 254, 0.25);
+        }
+
+        /* Scanline Animation Effect */
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(1000%); }
+        }
+        .animate-scan {
+            animation: scanline 4s linear infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #060b13; }
+        ::-webkit-scrollbar-thumb { background: #17243b; border-radius: 4px; border: 1px solid rgba(0, 242, 254, 0.2); }
+        ::-webkit-scrollbar-thumb:hover { background: #00f2fe; }
+    </style>
+</head>
+<body class="bg-petroleum-950 text-slate-100 antialiased flex flex-col min-h-screen selection:bg-cyanacc selection:text-petroleum-950">
+
+    <!-- Global Alert / Information Dialog -->
+    <div id="appModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden transition-opacity">
+        <div class="bg-petroleum-850 border border-cyanacc/30 rounded-2xl p-6 sm:p-8 max-w-lg w-full mx-4 shadow-2xl relative">
+            <div class="flex items-start space-x-4">
+                <div id="modalIconBox" class="w-12 h-12 rounded-xl bg-cyanacc/20 border border-cyanacc/40 flex items-center justify-center text-cyanacc text-2xl shrink-0">
+                    <i id="modalIcon" class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 id="modalTitle" class="text-xl font-bold text-white mb-1">System Notification</h3>
+                    <p id="modalMsg" class="text-xs sm:text-sm text-slate-300 leading-relaxed">Operation processed successfully.</p>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeAppModal()" class="px-6 py-2.5 bg-gradient-to-r from-cyanacc to-cyanacc-glow text-petroleum-950 text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg transition hover:scale-105">
+                    Acknowledge
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Chat Drawer Slideout -->
+    <div id="chatDrawer" class="fixed bottom-4 right-4 z-40 w-80 sm:w-96 bg-petroleum-900 border border-cyanacc/30 rounded-2xl shadow-2xl hidden flex-col overflow-hidden transition-all">
+        <div class="bg-petroleum-800 p-4 border-b border-petroleum-700 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="relative">
+                    <span class="w-3 h-3 bg-loggreen rounded-full block"></span>
+                    <span class="w-3 h-3 bg-loggreen rounded-full block absolute inset-0 animate-ping opacity-75"></span>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wider">Geoscience Support Desk</h4>
+                    <span class="text-[10px] text-slate-400">Petrophysicist On Call</span>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="chatLog" class="p-4 h-64 overflow-y-auto space-y-3 font-mono-code text-xs">
+            <div class="bg-petroleum-850 p-3 rounded-xl border border-petroleum-700 text-slate-300">
+                <span class="text-cyanacc font-bold block mb-1">SYSTEM [00:00]:</span>
+                Welcome to Well Log Data Solution. How can we assist with your log vectorization or LAS conversion specs?
+            </div>
+        </div>
+        <div class="p-3 bg-petroleum-950 border-t border-petroleum-800 flex space-x-2">
+            <input type="text" id="chatInput" placeholder="Ask a technical question..." onkeydown="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-petroleum-850 border border-petroleum-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyanacc">
+            <button onclick="sendChatMessage()" class="px-3 py-2 bg-cyanacc text-petroleum-950 rounded-xl font-bold text-xs"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Corporate Top Emergency & Specs Strip -->
+    <div class="bg-petroleum-950 border-b border-petroleum-800 text-[11px] py-2 px-4 sm:px-8 text-slate-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
+                <a href="tel:+919717126475" class="hover:text-cyanacc transition flex items-center">
+                    <i class="fa-solid fa-headset text-cyanacc mr-1.5"></i> Emergency Desk: +91 9717126475
+                </a>
+                <a href="mailto:info@welllogdigitizing.com" class="hover:text-cyanacc transition flex items-center">
+                    <i class="fa-solid fa-envelope text-cyanacc mr-1.5"></i> info@welllogdigitizing.com
+                </a>
+                <span class="hidden md:inline text-slate-500"><i class="fa-solid fa-location-dot text-cyanacc mr-1"></i> HQ: Narela, Delhi, India</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-amberacc font-mono-code font-semibold"><i class="fa-solid fa-shield-halved mr-1"></i> ISO 9001:2015 & CWLS Compliant</span>
+                <button onclick="toggleChat()" class="text-cyanacc hover:underline font-bold"><i class="fa-solid fa-comments mr-1"></i> Live Geo-Desk</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="sticky top-0 z-40 bg-petroleum-900/90 backdrop-blur-xl border-b border-petroleum-800 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex justify-between items-center">
+            
+            <!-- Company Logo -->
+            <a href="#" onclick="navigateTo('home'); return false;" class="flex items-center space-x-3 group">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyanacc-dark via-cyanacc to-amberacc flex items-center justify-center shadow-lg shadow-cyanacc/20 group-hover:scale-105 transition transform">
+                    <i class="fa-solid fa-bore-hole text-petroleum-950 text-xl font-black"></i>
+                </div>
+                <div>
+                    <span class="text-lg sm:text-xl font-black tracking-tight text-white block leading-none">Well Log Data Solution</span>
+                    <span class="text-[10px] text-cyanacc font-mono-code tracking-widest block uppercase mt-1">E&P Petrophysical & Vectorization Portal</span>
+                </div>
+            </a>
+
+            <!-- SPA Navigation Links -->
+            <nav class="hidden xl:flex items-center space-x-1 text-xs font-semibold uppercase tracking-wider">
+                <button onclick="navigateTo('home')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-home">Home</button>
+                <button onclick="navigateTo('services')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-services">Services</button>
+                <button onclick="navigateTo('converter')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-converter">AI OCR Converter</button>
+                <button onclick="navigateTo('specs')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-specs">LAS Specs</button>
+                <button onclick="navigateTo('portfolio')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-portfolio">Showcase</button>
+                <button onclick="navigateTo('estimator')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-estimator">Estimator</button>
+                <button onclick="navigateTo('about')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-about">About Us</button>
+                <button onclick="navigateTo('contact')" class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-petroleum-800 transition" id="nav-contact">Contact</button>
+            </nav>
+
+            <!-- CTA Actions -->
+            <div class="hidden sm:flex items-center space-x-3">
+                <button onclick="navigateTo('converter')" class="px-4 py-2.5 bg-petroleum-800 hover:bg-petroleum-700 border border-cyanacc/30 text-cyanacc text-xs font-bold uppercase rounded-xl transition">
+                    <i class="fa-solid fa-microchip mr-1.5"></i> Try AI Scanner
+                </button>
+                <button onclick="navigateTo('estimator')" class="px-5 py-2.5 bg-gradient-to-r from-cyanacc to-cyanacc-glow hover:from-cyanacc-glow hover:to-cyanacc text-petroleum-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-cyanacc/20 transition transform hover:-translate-y-0.5">
+                    Instant Quote <i class="fa-solid fa-calculator ml-1"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <button id="mobileMenuBtn" class="xl:hidden text-slate-300 hover:text-white p-2">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Drawer -->
+        <div id="mobileMenu" class="hidden xl:hidden bg-petroleum-900 border-b border-petroleum-800 px-4 pt-3 pb-6 space-y-2 text-xs font-semibold uppercase tracking-wider">
+            <button onclick="navigateTo('home')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">Home</button>
+            <button onclick="navigateTo('services')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">Services</button>
+            <button onclick="navigateTo('converter')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">AI OCR Converter</button>
+            <button onclick="navigateTo('specs')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">LAS Specs</button>
+            <button onclick="navigateTo('portfolio')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">Showcase</button>
+            <button onclick="navigateTo('estimator')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">Cost Estimator</button>
+            <button onclick="navigateTo('about')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">About Us</button>
+            <button onclick="navigateTo('contact')" class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-petroleum-800">Contact</button>
+        </div>
+    </header>
+
+    <!-- SPA VIEW CONTAINERS -->
+    <main class="flex-grow">
+
+        <!-- ================= VIEW 1: HOME PAGE ================= -->
+        <section id="page-home" class="spa-page">
+            
+            <!-- Hero Subsurface Canvas Showcase -->
+            <div class="relative seismic-grid-bg pt-12 pb-20 border-b border-petroleum-800 overflow-hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 grid lg:grid-cols-12 gap-8 items-center relative z-10">
+                    
+                    <div class="lg:col-span-6 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-cyanacc/10 border border-cyanacc/30 text-cyanacc text-xs font-bold uppercase tracking-widest">
+                            <span class="w-2 h-2 rounded-full bg-cyanacc animate-pulse"></span>
+                            <span>SLB & Baker Hughes Grade Digitizing Architecture</span>
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl xl:text-6xl font-black text-white tracking-tight leading-tight">
+                            Subsurface Raster Logs Transformed into <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyanacc via-cyanacc-glow to-amberacc">Precision LAS 2.0 / 3.0</span>
+                        </h1>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                            Turn legacy paper prints, blueprints, faded mud logs, and core analysis scans into petrophysical-ready vector files for Petrel, Techlog, GeoGraphix, and Interactive Petrophysics.
+                        </p>
+                        <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-2">
+                            <button onclick="navigateTo('converter')" class="px-8 py-4 bg-gradient-to-r from-cyanacc to-cyanacc-glow hover:from-cyanacc-glow hover:to-cyanacc text-petroleum-950 font-extrabold rounded-xl shadow-xl shadow-cyanacc/25 transition transform hover:-translate-y-0.5 text-center flex items-center justify-center space-x-2">
+                                <span>Try Interactive AI Scanner</span>
+                                <i class="fa-solid fa-microchip text-xs"></i>
+                            </button>
+                            <button onclick="navigateTo('estimator')" class="px-8 py-4 bg-petroleum-850 hover:bg-petroleum-800 text-slate-200 font-bold rounded-xl border border-petroleum-700 transition text-center flex items-center justify-center space-x-2">
+                                <span>Calculate Project Quote</span>
+                                <i class="fa-solid fa-calculator text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Subsurface Track Interactive Canvas -->
+                    <div class="lg:col-span-6">
+                        <div class="glass-card rounded-2xl p-5 shadow-2xl relative overflow-hidden border border-cyanacc/30">
+                            <div class="flex justify-between items-center pb-3 mb-3 border-b border-petroleum-800">
+                                <div class="flex items-center space-x-2 font-mono-code text-xs">
+                                    <i class="fa-solid fa-layer-group text-cyanacc"></i>
+                                    <span class="text-white font-bold">WELL_ALPHA_01_DIGITIZED.LAS</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="toggleCurveCanvas('GR')" id="btnToggleGR" class="px-2 py-1 bg-loggreen/20 text-loggreen text-[10px] font-mono-code rounded border border-loggreen/40">GR</button>
+                                    <button onclick="toggleCurveCanvas('RES')" id="btnToggleRES" class="px-2 py-1 bg-logred/20 text-logred text-[10px] font-mono-code rounded border border-logred/40">RES</button>
+                                    <button onclick="toggleCurveCanvas('DT')" id="btnToggleDT" class="px-2 py-1 bg-logblue/20 text-logblue text-[10px] font-mono-code rounded border border-logblue/40">DT</button>
+                                </div>
+                            </div>
+
+                            <!-- Real-time Canvas Rendering for Borehole Curves -->
+                            <div class="relative h-72 w-full log-track-paper rounded-xl border border-petroleum-800 overflow-hidden">
+                                <canvas id="heroLogCanvas" class="w-full h-full block"></canvas>
+                                <div class="absolute top-2 right-2 bg-petroleum-950/80 px-2 py-1 rounded text-[10px] font-mono-code text-cyanacc border border-petroleum-700">
+                                    <i class="fa-solid fa-chart-line mr-1"></i> Live Depth: <span id="heroCanvasDepth">2,450.5</span>m
+                                </div>
+                            </div>
+
+                            <div class="mt-4 grid grid-cols-3 gap-2 text-center font-mono-code text-[11px]">
+                                <div class="bg-petroleum-950 p-2 rounded-lg border border-petroleum-800">
+                                    <span class="text-slate-400 block text-[9px]">GR TRACK</span>
+                                    <span class="text-loggreen font-bold" id="valGR">48.5 GAPI</span>
+                                </div>
+                                <div class="bg-petroleum-950 p-2 rounded-lg border border-petroleum-800">
+                                    <span class="text-slate-400 block text-[9px]">DEEP RESISTIVITY</span>
+                                    <span class="text-logred font-bold" id="valRES">14.2 OHMM</span>
+                                </div>
+                                <div class="bg-petroleum-950 p-2 rounded-lg border border-petroleum-800">
+                                    <span class="text-slate-400 block text-[9px]">SONIC TRAVEL TIME</span>
+                                    <span class="text-logblue font-bold" id="valDT">64.8 US/F</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Metrics Bar -->
+            <div class="py-10 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="p-4 glass-card rounded-xl">
+                        <div class="text-3xl font-black text-cyanacc font-mono-code">14,500,000+</div>
+                        <div class="text-[11px] text-slate-400 uppercase font-semibold mt-1">Footages Digitized</div>
+                    </div>
+                    <div class="p-4 glass-card rounded-xl">
+                        <div class="text-3xl font-black text-amberacc font-mono-code">99.85%</div>
+                        <div class="text-[11px] text-slate-400 uppercase font-semibold mt-1">Depth Precision QC</div>
+                    </div>
+                    <div class="p-4 glass-card rounded-xl">
+                        <div class="text-3xl font-black text-cyanacc-glow font-mono-code">420+</div>
+                        <div class="text-[11px] text-slate-400 uppercase font-semibold mt-1">E&P Clients Worldwide</div>
+                    </div>
+                    <div class="p-4 glass-card rounded-xl">
+                        <div class="text-3xl font-black text-white font-mono-code">&lt; 24 Hrs</div>
+                        <div class="text-[11px] text-slate-400 uppercase font-semibold mt-1">Turnaround Options</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Grid Enterprise Capabilities -->
+            <div class="py-20 bg-petroleum-950">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Engineering Suite</span>
+                        <h2 class="text-3xl sm:text-4xl font-black text-white mt-4">Enterprise Subsurface Data Vectorization</h2>
+                        <p class="text-slate-400 mt-2 text-xs sm:text-sm">Engineered for petrophysicists, exploration geologists, and reservoir engineering groups needing error-free LAS curves.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+                        
+                        <div class="glass-card glass-card-hover rounded-2xl p-7 transition">
+                            <div class="w-12 h-12 rounded-xl bg-cyanacc/10 border border-cyanacc/30 flex items-center justify-center text-cyanacc text-xl mb-5">
+                                <i class="fa-solid fa-chart-area"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Wireline & LWD Curve Vectorization</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed mb-4">Digitizing linear, logarithmic, wrapped, and split scale log curves into continuous CWLS LAS 2.0 and 3.0 files with header parsing.</p>
+                            <button onclick="navigateTo('services')" class="text-xs font-bold text-cyanacc hover:underline flex items-center">Explore Workflow <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
+                        </div>
+
+                        <div class="glass-card glass-card-hover rounded-2xl p-7 transition">
+                            <div class="w-12 h-12 rounded-xl bg-amberacc/10 border border-amberacc/30 flex items-center justify-center text-amberacc text-xl mb-5">
+                                <i class="fa-solid fa-map"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">GIS Subsurface Map Vectorization</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed mb-4">Digitizing paper seismic shot point maps, structural contour grids, and well location maps into georeferenced ESRI Shapefiles and GeoJSON.</p>
+                            <button onclick="navigateTo('services')" class="text-xs font-bold text-amberacc hover:underline flex items-center">Explore Workflow <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
+                        </div>
+
+                        <div class="glass-card glass-card-hover rounded-2xl p-7 transition">
+                            <div class="w-12 h-12 rounded-xl bg-cyanacc-glow/10 border border-cyanacc-glow/30 flex items-center justify-center text-cyanacc-glow text-xl mb-5">
+                                <i class="fa-solid fa-flask-vial"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Mud Log OCR & Core Data Capture</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed mb-4">Extracting lithology percentages, rate of penetration (ROP), gas chromatography (C1-C5), and routine core analysis (RCA/SCAL) tables.</p>
+                            <button onclick="navigateTo('services')" class="text-xs font-bold text-cyanacc-glow hover:underline flex items-center">Explore Workflow <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= VIEW 2: INTERACTIVE AI CONVERTER SCANNER ================= -->
+        <section id="page-converter" class="spa-page hidden">
+            <div class="py-12 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Real-Time Optical Curve Tracking</span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white mt-3">Interactive AI Raster-to-LAS OCR Engine</h1>
+                    <p class="text-slate-400 mt-2 text-xs sm:text-sm max-w-2xl mx-auto">Upload or test a sample raster log image to see real-time optical trace vectorization and automated header generation.</p>
+                </div>
+            </div>
+
+            <div class="py-16 bg-petroleum-950">
+                <div class="max-w-6xl mx-auto px-4 sm:px-8 grid lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Scanner Upload & Control Column -->
+                    <div class="lg:col-span-5 space-y-6">
+                        <div class="glass-card rounded-2xl p-6 border border-petroleum-700">
+                            <h3 class="text-lg font-bold text-white mb-3 flex items-center">
+                                <i class="fa-solid fa-upload text-cyanacc mr-2"></i> Step 1: Input Raster Image
+                            </h3>
+                            
+                            <!-- Drop Zone -->
+                            <div id="converterDropZone" onclick="triggerConverterSample()" class="border-2 border-dashed border-petroleum-700 hover:border-cyanacc rounded-xl p-8 text-center cursor-pointer transition bg-petroleum-950 relative overflow-hidden group">
+                                <i class="fa-solid fa-file-pdf text-4xl text-cyanacc mb-3 group-hover:scale-110 transition"></i>
+                                <span class="text-xs font-bold text-white block">Click to Load Sample Well Log Scan</span>
+                                <span class="text-[10px] text-slate-500 block mt-1">Supports PDF, TIFF, PNG (Blueprint / Paper Scan)</span>
+                            </div>
+
+                            <div class="mt-6 space-y-4">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Scale Grid Calibration Mode</label>
+                                    <select id="converterScaleType" class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-3 py-2 text-xs text-white">
+                                        <option value="linear">Linear Grid (GR, SP, CALI)</option>
+                                        <option value="logarithmic">Logarithmic Grid (Resistivity 0.2 - 2000)</option>
+                                        <option value="split">Split Scale Track (Sonic / Density)</option>
+                                    </select>
+                                </div>
+
+                                <button onclick="runAIOcrScanner()" id="btnRunScanner" class="w-full py-3 bg-gradient-to-r from-cyanacc to-cyanacc-glow text-petroleum-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
+                                    Run Optical Curve Tracking <i class="fa-solid fa-bolt ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Heatmap Precision Score -->
+                        <div class="glass-card rounded-2xl p-5 font-mono-code text-xs space-y-2">
+                            <div class="flex justify-between text-slate-400">
+                                <span>Optical Trace Confidence:</span>
+                                <span class="text-cyanacc font-bold" id="ocrConfidenceScore">-- %</span>
+                            </div>
+                            <div class="w-full bg-petroleum-950 h-2 rounded-full overflow-hidden border border-petroleum-800">
+                                <div id="ocrConfidenceBar" class="bg-cyanacc h-full w-0 transition-all duration-1000"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-slate-500 pt-1">
+                                <span>Depth Alignment: <strong class="text-white" id="ocrDepthStatus">Pending</strong></span>
+                                <span>Grid Skew: <strong class="text-white" id="ocrSkewStatus">0.00°</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scanner Output Realtime Preview Column -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="glass-card rounded-2xl p-6 relative border border-petroleum-700 overflow-hidden">
+                            <div class="flex justify-between items-center pb-3 mb-4 border-b border-petroleum-800">
+                                <span class="text-xs font-bold text-white uppercase font-mono-code"><i class="fa-solid fa-code text-cyanacc mr-1.5"></i> Generated LAS 2.0 Header & Curve Table</span>
+                                <span id="ocrStatusBadge" class="px-2.5 py-1 bg-petroleum-800 text-slate-400 text-[10px] font-mono-code rounded">READY</span>
+                            </div>
+
+                            <!-- Realtime LAS Text View Box -->
+                            <pre id="lasTextOutput" class="bg-petroleum-950 p-4 rounded-xl border border-petroleum-800 font-mono-code text-[11px] text-cyanacc/90 h-80 overflow-y-auto leading-relaxed shadow-inner">// Click 'Run Optical Curve Tracking' to generate live CWLS LAS metadata...
+~VERSION INFORMATION
+ VERS.                  2.0 : CWLS LOG ASCII STANDARD - VERSION 2.0
+ WRAP.                   NO : ONE LINE PER DEPTH STEP
+~WELL INFORMATION
+#MNEM.UNIT              DATA : DESCRIPTION
+#---------      ------------ : -----------------------------------
+ STRT.M            1200.0000 : START DEPTH
+ STOP.M            1250.0000 : STOP DEPTH
+ STEP.M               0.1250 : STEP INCREMENT
+ WELL.          ALPHA_WELL_01 : WELL NAME
+~CURVE INFORMATION
+ DEPT.M                      : DEPTH TRACK
+ GR  .GAPI                   : GAMMA RAY
+ RT  .OHMM                   : DEEP RESISTIVITY
+ DT  .US/F                   : SONIC TRAVEL TIME
+~A DEPTH       GR       RT       DT
+1200.00    42.10    12.45    65.20
+1200.125   43.50    12.80    65.10
+1200.25    45.00    13.10    64.90
+1200.375   48.20    13.90    64.20
+...</pre>
+
+                            <div class="mt-4 flex justify-between items-center">
+                                <span class="text-[10px] text-slate-400 font-mono-code">CWLS LAS 2.0 Standard Compliant</span>
+                                <button onclick="copyLASOutput()" class="px-4 py-2 bg-petroleum-800 hover:bg-petroleum-700 text-white text-xs font-bold rounded-xl border border-petroleum-700 transition">
+                                    <i class="fa-solid fa-copy mr-1 text-cyanacc"></i> Copy LAS Header
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= VIEW 3: SERVICES PAGE ================= -->
+        <section id="page-services" class="spa-page hidden">
+            <div class="py-12 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Full Scope Capabilities</span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white mt-3">Subsurface Data Digitizing Services</h1>
+                </div>
+            </div>
+
+            <div class="py-16 bg-petroleum-950">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-12">
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="glass-card rounded-2xl p-8 border border-petroleum-700 space-y-4">
+                            <span class="text-cyanacc font-mono-code text-xs font-bold">CORE SERVICE 01</span>
+                            <h3 class="text-2xl font-bold text-white">Wireline & LWD Well Log Vectorization</h3>
+                            <p class="text-slate-300 text-xs leading-relaxed">
+                                Complete manual and semi-automated curve extraction from paper scans, TIFFs, and PDFs into CWLS LAS 2.0/3.0 formats. We specialize in handling complex log environments including:
+                            </p>
+                            <ul class="text-xs text-slate-300 space-y-2 font-mono-code">
+                                <li class="flex items-center"><i class="fa-solid fa-check text-cyanacc mr-2"></i> Gamma Ray, Caliper, Resistivity, Sonic, Density, Neutron</li>
+                                <li class="flex items-center"><i class="fa-solid fa-check text-cyanacc mr-2"></i> Linear, Logarithmic (1 to 4 cycles), and Split Scale Grids</li>
+                                <li class="flex items-center"><i class="fa-solid fa-check text-cyanacc mr-2"></i> Off-scale wrapped curve recovery & gap interpolation</li>
+                            </ul>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-8 border border-petroleum-700 space-y-4">
+                            <span class="text-amberacc font-mono-code text-xs font-bold">CORE SERVICE 02</span>
+                            <h3 class="text-2xl font-bold text-white">Mud Log & Composite Lithology Capture</h3>
+                            <p class="text-slate-300 text-xs leading-relaxed">
+                                Digitizing intricate mud logging charts and converting multi-parameter drilling data into clean digital formats ready for reservoir evaluation:
+                            </p>
+                            <ul class="text-xs text-slate-300 space-y-2 font-mono-code">
+                                <li class="flex items-center"><i class="fa-solid fa-check text-amberacc mr-2"></i> Rate of Penetration (ROP) & Total Gas Curves</li>
+                                <li class="flex items-center"><i class="fa-solid fa-check text-amberacc mr-2"></i> Chromatograph Gas Breakdown (C1, C2, C3, C4, iC5)</li>
+                                <li class="flex items-center"><i class="fa-solid fa-check text-amberacc mr-2"></i> Lithology Percentage Columns & Geological Notes</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= VIEW 4: LAS SPECS PAGE ================= -->
+        <section id="page-specs" class="spa-page hidden">
+            <div class="py-12 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Compliance & Standards</span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white mt-3">CWLS LAS Specifications & Formats</h1>
+                </div>
+            </div>
+
+            <div class="py-16 bg-petroleum-950">
+                <div class="max-w-5xl mx-auto px-4 sm:px-8 space-y-8">
+                    <div class="glass-card rounded-2xl p-8 border border-petroleum-700 space-y-6">
+                        <h3 class="text-2xl font-bold text-white">Supported Deliverable Formats</h3>
+                        <div class="grid sm:grid-cols-3 gap-4 font-mono-code text-xs">
+                            <div class="bg-petroleum-950 p-4 rounded-xl border border-petroleum-800 text-center">
+                                <span class="text-cyanacc font-bold block text-sm">LAS 2.0 / 3.0</span>
+                                <span class="text-slate-400 text-[10px] mt-1 block">CWLS Standard ASCII</span>
+                            </div>
+                            <div class="bg-petroleum-950 p-4 rounded-xl border border-petroleum-800 text-center">
+                                <span class="text-amberacc font-bold block text-sm">DLIS / LIS</span>
+                                <span class="text-slate-400 text-[10px] mt-1 block">Binary Log Standard</span>
+                            </div>
+                            <div class="bg-petroleum-950 p-4 rounded-xl border border-petroleum-800 text-center">
+                                <span class="text-cyanacc-glow font-bold block text-sm">ESRI Shapefile</span>
+                                <span class="text-slate-400 text-[10px] mt-1 block">GIS Vector Layer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= VIEW 5: PORTFOLIO SHOWCASE PAGE ================= -->
+        <section id="page-portfolio" class="spa-page hidden">
+            <div class="py-12 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Quality Verification</span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white mt-3">Interactive Quality Comparison Showcase</h1>
+                </div>
+            </div>
+
+            <div class="py-16 bg-petroleum-950">
+                <div class="max-w-5xl mx-auto px-4 sm:px-8">
+                    <div class="glass-card rounded-2xl p-6 border border-petroleum-700 space-y-6">
+                        <div class="flex justify-between items-center pb-4 border-b border-petroleum-800">
+                            <h3 class="text-lg font-bold text-white">Vintage Paper Log vs Digitized LAS Curve Alignment</h3>
+                            <span class="text-xs font-mono-code text-cyanacc">DEPTH INTERVAL: 2,400m - 2,500m</span>
+                        </div>
+
+                        <!-- Side by Side Preview -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-petroleum-950 p-4 rounded-xl border border-petroleum-800 text-center">
+                                <span class="text-xs font-bold text-red-400 block mb-2 font-mono-code">RASTER SCAN (1975 PAPER LOG)</span>
+                                <div class="h-64 bg-slate-900 rounded border border-slate-800 flex items-center justify-center font-mono-code text-xs text-slate-500">
+                                    [Faded Blueprint Curve Track Image]
+                                </div>
+                            </div>
+                            <div class="bg-petroleum-950 p-4 rounded-xl border border-petroleum-800 text-center">
+                                <span class="text-xs font-bold text-cyanacc block mb-2 font-mono-code">DIGITIZED LAS VECTOR (CWLS)</span>
+                                <div class="h-64 bg-petroleum-950 rounded border border-petroleum-800 flex items-center justify-center font-mono-code text-xs text-cyanacc">
+                                    [Clean Vector Curve - 99.9% Depth Aligned]
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= VIEW 6: COST ESTIMATOR PAGE ================= -->
+        <section id="page-estimator" class="spa-page hidden">
+            <div class="py-12 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Instant Commercial Calculator</span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white mt-3">Live Digitizing Quote Estimator</h1>
+                </div>
+            </div>
+
+            <div class="py-16 bg-petroleum-950">
+                <div class="max-w-5xl mx-auto px-4 sm:px-8 grid lg:grid-cols-12 gap-8 items-start">
+                    
+                    <div class="lg:col-span-7 glass-card rounded-2xl p-6 border border-petroleum-700 space-y-5">
+                        <h3 class="text-lg font-bold text-white border-b border-petroleum-800 pb-3">Project Parameters</h3>
+                        
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Log Type Category</label>
+                            <select id="calcLogType" onchange="runQuoteCalculator()" class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                                <option value="0.02">Standard Wireline (GR, SP, RES, CALI)</option>
+                                <option value="0.028">Porosity & Sonic (RHOB, NPHI, DT)</option>
+                                <option value="0.035">Mud Logging Chart & Gas Tracks</option>
+                                <option value="0.04">Dipmeter & 4-Arm Image Log</option>
+                            </select>
+                        </div>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Total Depth Interval (ft/m)</label>
+                                <input type="number" id="calcDepth" value="3500" min="100" oninput="runQuoteCalculator()" class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Curves per Log</label>
+                                <input type="number" id="calcCurves" value="4" min="1" max="20" oninput="runQuoteCalculator()" class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Condition of Raster Scan</label>
+                            <select id="calcCondition" onchange="runQuoteCalculator()" class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-3 py-2.5 text-xs text-white">
+                                <option value="1.0">Clean High-Res Digital Scan / PDF</option>
+                                <option value="1.2">Faded Paper / Blueprint Scan (+20%)</option>
+                                <option value="1.35">Severe Creases / Torn / Overlapping Inks (+35%)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Summary Box -->
+                    <div id="quoteSummaryBox" class="lg:col-span-5 glass-card rounded-2xl p-6 border border-petroleum-700 space-y-6">
+                        <h3 class="text-lg font-bold text-white border-b border-petroleum-800 pb-3">Commercial Summary</h3>
+                        
+                        <div class="space-y-3 font-mono-code text-xs">
+                            <div class="flex justify-between text-slate-400">
+                                <span>Calculated Footages:</span>
+                                <span class="text-white" id="outFootage">3,500</span>
+                            </div>
+                            <div class="flex justify-between text-slate-400">
+                                <span>Effective Tracks:</span>
+                                <span class="text-white" id="outTracks">14</span>
+                            </div>
+                            <div class="border-t border-petroleum-800 pt-3 flex justify-between items-center text-sm font-bold">
+                                <span class="text-white">Estimated Cost:</span>
+                                <span class="text-2xl text-cyanacc font-extrabold" id="outTotalPrice">$280.00 USD</span>
+                            </div>
+                        </div>
+
+                        <button onclick="downloadQuotePDF()" class="w-full py-3 bg-gradient-to-r from-cyanacc to-cyanacc-glow text-petroleum-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
+                            <i class="fa-solid fa-file-pdf mr-1"></i> Download PDF Summary
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= VIEW 7: ABOUT US PAGE ================= -->
+        <section id="page-about" class="spa-page hidden">
+            <div class="py-12 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Corporate Profile</span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white mt-3">About Well Log Data Solution</h1>
+                </div>
+            </div>
+
+            <div class="py-16 bg-petroleum-950">
+                <div class="max-w-4xl mx-auto px-4 sm:px-8 space-y-8 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    <div class="glass-card rounded-2xl p-8 border border-petroleum-700 space-y-4">
+                        <h3 class="text-xl font-bold text-white">Subsurface Data Excellence Since 2012</h3>
+                        <p>
+                            Well Log Data Solution (`welllogdigitizing.com`) is a dedicated E&P petrophysical data digitization domain operating out of Delhi, India, servicing exploration companies, national oil companies (NOCs), and geological consultancies worldwide.
+                        </p>
+                        <p>
+                            Our team consists of petrophysicists, GIS specialists, and raster vectorization engineers equipped with state-of-the-art optical recognition tools and dual-pass manual audit protocols.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= VIEW 8: CONTACT US PAGE ================= -->
+        <section id="page-contact" class="spa-page hidden">
+            <div class="py-12 bg-petroleum-900 border-b border-petroleum-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span class="text-cyanacc text-xs font-bold uppercase tracking-widest bg-cyanacc/10 px-3 py-1 rounded-full border border-cyanacc/20">Direct Portal</span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white mt-3">Contact Technical Support & Sales</h1>
+                </div>
+            </div>
+
+            <div class="py-16 bg-petroleum-950">
+                <div class="max-w-4xl mx-auto px-4 sm:px-8">
+                    <div class="glass-card rounded-2xl p-8 border border-petroleum-700 space-y-6">
+                        <form onsubmit="handleContactSubmit(event)" class="space-y-4">
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Full Name</label>
+                                    <input type="text" required placeholder="John Smith" class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-4 py-3 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Corporate Email</label>
+                                    <input type="email" required placeholder="john@energy.com" class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-4 py-3 text-xs text-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Project Details</label>
+                                <textarea rows="4" required placeholder="Specify footage, curve list, required turnaround..." class="w-full bg-petroleum-950 border border-petroleum-700 rounded-xl px-4 py-3 text-xs text-white"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full py-4 bg-gradient-to-r from-cyanacc to-cyanacc-glow text-petroleum-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
+                                Submit Project Inquiry
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Mega Footer -->
+    <footer class="bg-petroleum-950 border-t border-petroleum-800 py-12 text-slate-400 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 grid md:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-3">
+                <span class="text-white font-bold text-sm block">Well Log Data Solution</span>
+                <p class="leading-relaxed text-[11px]">Enterprise subsurface vectorization, LAS 2.0/3.0 conversion, and petrophysical data audit suite.</p>
+            </div>
+            <div>
+                <span class="text-white font-bold text-sm block mb-3">Portal Navigation</span>
+                <ul class="space-y-2 text-[11px]">
+                    <li><button onclick="navigateTo('home')" class="hover:text-cyanacc">Home</button></li>
+                    <li><button onclick="navigateTo('converter')" class="hover:text-cyanacc">AI OCR Converter</button></li>
+                    <li><button onclick="navigateTo('specs')" class="hover:text-cyanacc">LAS Standards</button></li>
+                    <li><button onclick="navigateTo('estimator')" class="hover:text-cyanacc">Cost Estimator</button></li>
+                </ul>
+            </div>
+            <div>
+                <span class="text-white font-bold text-sm block mb-3">Services</span>
+                <ul class="space-y-2 text-[11px]">
+                    <li><button onclick="navigateTo('services')" class="hover:text-cyanacc">Wireline Vectorization</button></li>
+                    <li><button onclick="navigateTo('services')" class="hover:text-cyanacc">Mud Log OCR</button></li>
+                    <li><button onclick="navigateTo('services')" class="hover:text-cyanacc">GIS Base Map Digitizing</button></li>
+                </ul>
+            </div>
+            <div>
+                <span class="text-white font-bold text-sm block mb-3">HQ Contact</span>
+                <p class="text-[11px]">Narela, Delhi, India</p>
+                <p class="text-[11px] mt-1">Direct: +91 9717126475</p>
+                <p class="text-[11px] mt-1">Email: info@welllogdigitizing.com</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 pt-6 border-t border-petroleum-800 flex justify-between items-center text-[10px] text-slate-500">
+            <p>&copy; 2026 Well Log Data Solution (`welllogdigitizing.com`). ISO 9001:2015 Certified.</p>
+            <p>CWLS LAS 2.0 / 3.0 Compatible</p>
+        </div>
+    </footer>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        // SPA Router Engine
+        function navigateTo(pageId) {
+            const pages = document.querySelectorAll('.spa-page');
+            pages.forEach(p => p.classList.add('hidden'));
+
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('text-white', 'bg-petroleum-800');
+                btn.classList.add('text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`nav-${pageId}`);
+            if (activeBtn) activeBtn.classList.add('text-white', 'bg-petroleum-800');
+
+            document.getElementById('mobileMenu').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Hamburger Menu Toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // App Modal Dialog Function
+        function showAppModal(title, msg) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMsg').innerText = msg;
+            document.getElementById('appModal').classList.remove('hidden');
+        }
+
+        function closeAppModal() {
+            document.getElementById('appModal').classList.add('hidden');
+        }
+
+        // Live Chat Drawer Toggle
+        function toggleChat() {
+            const drawer = document.getElementById('chatDrawer');
+            if (drawer.classList.contains('hidden')) {
+                drawer.classList.remove('hidden');
+                drawer.classList.add('flex');
+            } else {
+                drawer.classList.add('hidden');
+                drawer.classList.remove('flex');
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const log = document.getElementById('chatLog');
+            if (!input.value.trim()) return;
+
+            const userMsg = input.value;
+            log.innerHTML += `
+                <div class="bg-petroleum-800 p-2.5 rounded-xl border border-petroleum-700 text-white text-right">
+                    ${userMsg}
+                </div>
+            `;
+            input.value = '';
+
+            setTimeout(() => {
+                log.innerHTML += `
+                    <div class="bg-petroleum-850 p-2.5 rounded-xl border border-petroleum-700 text-cyanacc">
+                        <span class="font-bold block text-[10px]">PETROPHYSICIST DESK:</span>
+                        Thank you for your inquiry regarding "${userMsg.substring(0, 20)}...". An engineer will respond in under 5 minutes.
+                    </div>
+                `;
+                log.scrollTop = log.scrollHeight;
+            }, 800);
+        }
+
+        // Hero Subsurface Canvas Animation System
+        let activeCurves = { GR: true, RES: true, DT: true };
+        let canvasAnimFrame;
+
+        function initHeroCanvas() {
+            const canvas = document.getElementById('heroLogCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Adjust canvas aspect ratio
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            let offsetY = 0;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                offsetY += 0.5;
+                if (offsetY > 40) offsetY = 0;
+
+                // Draw Grid Lines
+                ctx.strokeStyle = 'rgba(0, 242, 254, 0.08)';
+                ctx.lineWidth = 1;
+
+                for (let x = 0; x < canvas.width; x += 30) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+
+                for (let y = offsetY; y < canvas.height; y += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+
+                // Render GR Curve (Green)
+                if (activeCurves.GR) {
+                    ctx.strokeStyle = '#00e676';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    for (let y = 0; y < canvas.height; y += 4) {
+                        let x = (canvas.width * 0.25) + Math.sin((y + offsetY * 2) * 0.04) * 35 + Math.cos(y * 0.1) * 10;
+                        if (y === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+
+                // Render RES Curve (Red)
+                if (activeCurves.RES) {
+                    ctx.strokeStyle = '#ff1744';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    for (let y = 0; y < canvas.height; y += 4) {
+                        let x = (canvas.width * 0.55) + Math.cos((y + offsetY * 1.5) * 0.03) * 45;
+                        if (y === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+
+                // Render DT Curve (Blue)
+                if (activeCurves.DT) {
+                    ctx.strokeStyle = '#29b6f6';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    for (let y = 0; y < canvas.height; y += 4) {
+                        let x = (canvas.width * 0.8) + Math.sin((y + offsetY * 3) * 0.05) * 25;
+                        if (y === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+
+                // Dynamic Depth Counter Update
+                document.getElementById('heroCanvasDepth').innerText = (2450.0 + (offsetY * 0.1)).toFixed(1);
+
+                canvasAnimFrame = requestAnimationFrame(draw);
+            }
+
+            draw();
+        }
+
+        function toggleCurveCanvas(curve) {
+            activeCurves[curve] = !activeCurves[curve];
+            const btn = document.getElementById(`btnToggle${curve}`);
+            if (activeCurves[curve]) {
+                btn.classList.remove('opacity-40');
+            } else {
+                btn.classList.add('opacity-40');
+            }
+        }
+
+        // Interactive AI OCR Scanner Logic
+        function triggerConverterSample() {
+            showAppModal("Sample Loaded", "Sample 1982 Vintage Paper Log Scan loaded into OCR buffer.");
+        }
+
+        function runAIOcrScanner() {
+            const btn = document.getElementById('btnRunScanner');
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Vectorizing Raster Curves...';
+            
+            setTimeout(() => {
+                document.getElementById('ocrConfidenceScore').innerText = '99.82%';
+                document.getElementById('ocrConfidenceBar').style.width = '99.82%';
+                document.getElementById('ocrDepthStatus').innerText = '100% Calibrated';
+                document.getElementById('ocrStatusBadge').innerText = 'COMPLETED';
+                document.getElementById('ocrStatusBadge').className = "px-2.5 py-1 bg-cyanacc/20 text-cyanacc text-[10px] font-mono-code rounded font-bold";
+
+                btn.innerHTML = 'Run Optical Curve Tracking <i class="fa-solid fa-bolt ml-1"></i>';
+                showAppModal("OCR Vectorization Complete", "LAS 2.0 file structure successfully generated from raster trace!");
+            }, 1200);
+        }
+
+        function copyLASOutput() {
+            const text = document.getElementById('lasTextOutput').innerText;
+            document.execCommand('copy');
+            showAppModal("Copied to Clipboard", "LAS header text copied to clipboard!");
+        }
+
+        // Live Quote Calculator
+        function runQuoteCalculator() {
+            const unitRate = parseFloat(document.getElementById('calcLogType').value);
+            const depth = parseFloat(document.getElementById('calcDepth').value) || 0;
+            const curves = parseInt(document.getElementById('calcCurves').value) || 1;
+            const condition = parseFloat(document.getElementById('calcCondition').value);
+
+            const totalFootage = depth;
+            const totalTracks = curves;
+            let cost = (totalFootage * unitRate * (curves * 0.5)) * condition;
+            if (cost < 50) cost = 50;
+
+            document.getElementById('outFootage').innerText = totalFootage.toLocaleString() + ' ft';
+            document.getElementById('outTracks').innerText = totalTracks + ' Tracks';
+            document.getElementById('outTotalPrice').innerText = '$' + cost.toFixed(2) + ' USD';
+        }
+
+        function downloadQuotePDF() {
+            const element = document.getElementById('quoteSummaryBox');
+            const opt = {
+                margin:       0.5,
+                filename:     'WellLogDataSolution_Quote.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            showAppModal("Inquiry Submitted", "Thank you for contacting Well Log Data Solution. An engineer will be in touch shortly!");
+        }
+
+        // Window Load Initialization
+        window.onload = function() {
+            initHeroCanvas();
+            runQuoteCalculator();
+        };
+    </script>
+</body>
+</html>

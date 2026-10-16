@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Well Log Data Solution | Precision Well Log Digitizing & Subsurface Data Solutions</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#060d1a',
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569'
+                        },
+                        electric: {
+                            DEFAULT: '#0284c7',
+                            light: '#38bdf8',
+                            dark: '#0369a1'
+                        },
+                        tealacc: {
+                            DEFAULT: '#0d9488',
+                            light: '#14b8a6'
+                        },
+                        gold: {
+                            DEFAULT: '#f59e0b',
+                            light: '#fbbf24'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & JetBrains Mono -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-mono-code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero-pattern {
+            background-image: radial-gradient(rgba(56, 189, 248, 0.12) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .log-grid-bg {
+            background: linear-gradient(to right, rgba(2, 132, 199, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(2, 132, 199, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-navy-950 text-slate-100 antialiased selection:bg-electric selection:text-white flex flex-col min-h-screen">
+
+    <!-- Global Alert / Modal Box -->
+    <div id="customModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md hidden transition-opacity">
+        <div class="bg-navy-800 border border-electric/30 rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl relative">
+            <div class="flex items-start space-x-4">
+                <div id="modalIconContainer"
+                    class="w-12 h-12 rounded-xl bg-electric/20 border border-electric/40 flex items-center justify-center text-electric-light text-xl shrink-0">
+                    <i id="modalIcon" class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 id="modalTitle" class="text-lg font-bold text-white mb-1">Notification</h3>
+                    <p id="modalMessage" class="text-sm text-slate-300 leading-relaxed">Operation performed
+                        successfully.</p>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeModal()"
+                    class="px-5 py-2.5 bg-electric hover:bg-electric-dark text-white text-sm font-semibold rounded-xl shadow-lg shadow-electric/25 transition">
+                    Acknowledge
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Contact Strip -->
+    <div class="bg-navy-900/90 border-b border-navy-800 text-xs py-2 px-4 sm:px-8 text-slate-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6">
+                <a href="tel:+919717126475" class="hover:text-electric-light transition"><i
+                        class="fa-solid fa-phone text-electric-light mr-1.5"></i> +91 9717126475</a>
+                <a href="mailto:info@welllogdigitizing.com" class="hover:text-electric-light transition"><i
+                        class="fa-solid fa-envelope text-electric-light mr-1.5"></i> info@welllogdigitizing.com</a>
+                <span class="hidden md:inline"><i class="fa-solid fa-location-dot text-electric-light mr-1.5"></i>
+                    Narela, Delhi, India</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-tealacc-light font-semibold"><i class="fa-solid fa-shield-halved mr-1"></i> ISO
+                    9001:2015 QC Standards</span>
+                <span class="text-gold font-mono-code font-medium"><i class="fa-solid fa-clock mr-1"></i> 24/7
+                    Processing Desk</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-navy-800 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 flex justify-between items-center">
+
+            <!-- Company Logo -->
+            <a href="#" onclick="navigateTo('home'); return false;" class="flex items-center space-x-3 group">
+                <div
+                    class="w-11 h-11 rounded-xl bg-gradient-to-tr from-electric-dark via-electric to-tealacc flex items-center justify-center shadow-lg shadow-electric/25 group-hover:scale-105 transition transform">
+                    <i class="fa-solid fa-chart-line text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-lg sm:text-xl font-extrabold tracking-tight text-white block leading-none">Well
+                        Log Data Solution</span>
+                    <span
+                        class="text-[10px] text-electric-light font-mono-code tracking-widest block uppercase mt-1">E&P
+                        Petrophysical & GIS Digitizing</span>
+                </div>
+            </a>
+
+            <!-- Desktop SPA Nav Links -->
+            <nav class="hidden lg:flex items-center space-x-1 xl:space-x-2 text-sm font-medium">
+                <button onclick="navigateTo('home')"
+                    class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition"
+                    id="nav-home">Home</button>
+                <button onclick="navigateTo('services')"
+                    class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition"
+                    id="nav-services">Services</button>
+                <button onclick="navigateTo('specs')"
+                    class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition"
+                    id="nav-specs">Formats & Specs</button>
+                <button onclick="navigateTo('portfolio')"
+                    class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition"
+                    id="nav-portfolio">Quality Showcase</button>
+                <button onclick="navigateTo('estimator')"
+                    class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition"
+                    id="nav-estimator">Cost Estimator</button>
+                <button onclick="navigateTo('about')"
+                    class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition"
+                    id="nav-about">About Us</button>
+                <button onclick="navigateTo('contact')"
+                    class="nav-btn px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition"
+                    id="nav-contact">Contact Us</button>
+            </nav>
+
+            <!-- CTA Button -->
+            <div class="hidden sm:flex items-center space-x-3">
+                <button onclick="navigateTo('estimator')"
+                    class="px-5 py-2.5 bg-gradient-to-r from-electric to-electric-dark hover:from-electric-dark hover:to-electric text-white font-semibold text-sm rounded-xl shadow-lg shadow-electric/30 transition transform hover:-translate-y-0.5">
+                    Get Instant Quote <i class="fa-solid fa-calculator ml-1.5 text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Hamburger Button -->
+            <button id="mobileMenuBtn" class="lg:hidden text-slate-300 hover:text-white p-2 focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden lg:hidden bg-navy-900 border-b border-navy-800 px-4 pt-3 pb-6 space-y-2">
+            <button onclick="navigateTo('home')"
+                class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-navy-800 font-medium">Home</button>
+            <button onclick="navigateTo('services')"
+                class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-navy-800 font-medium">Services</button>
+            <button onclick="navigateTo('specs')"
+                class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-navy-800 font-medium">Formats
+                & Specs</button>
+            <button onclick="navigateTo('portfolio')"
+                class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-navy-800 font-medium">Quality
+                Showcase</button>
+            <button onclick="navigateTo('estimator')"
+                class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-navy-800 font-medium">Cost
+                Estimator</button>
+            <button onclick="navigateTo('about')"
+                class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-navy-800 font-medium">About
+                Us</button>
+            <button onclick="navigateTo('contact')"
+                class="block w-full text-left px-3 py-2.5 rounded-lg text-slate-200 hover:bg-navy-800 font-medium">Contact
+                Us</button>
+            <div class="pt-2">
+                <button onclick="navigateTo('estimator')"
+                    class="w-full text-center py-3 bg-electric hover:bg-electric-dark text-white font-semibold rounded-xl shadow-md">
+                    Instant Cost Calculator
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN PAGE CONTENT CONTAINER (SPA VIEWS) -->
+    <main class="flex-grow">
+
+        <!-- ================= PAGE 1: HOME PAGE ================= -->
+        <section id="page-home" class="spa-page">
+            <!-- Hero Banner -->
+            <div class="relative hero-pattern pt-16 pb-24 border-b border-navy-800 overflow-hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 grid lg:grid-cols-12 gap-12 items-center relative z-10">
+
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div
+                            class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-electric/10 border border-electric/30 text-electric-light text-xs font-semibold uppercase tracking-wider">
+                            <i class="fa-solid fa-layer-group text-gold"></i>
+                            <span>Trusted Subsurface Data Digitizing Solutions</span>
+                        </div>
+                        <h1
+                            class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                            Transform Legacy Scans into Precision <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-electric-light via-tealacc-light to-gold">LAS
+                                2.0 / 3.0 & GIS Data</span>
+                        </h1>
+                        <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            Convert raster well logs, paper seismic plots, mud logs, and core analysis reports into
+                            industry-standard digital formats for Petrel, Techlog, GeoGraphix, and ArcGIS platforms.
+                        </p>
+                        <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-2">
+                            <button onclick="navigateTo('estimator')"
+                                class="px-8 py-4 bg-gradient-to-r from-electric to-electric-dark hover:from-electric-dark hover:to-electric text-white font-bold rounded-xl shadow-xl shadow-electric/30 transition transform hover:-translate-y-0.5 text-center flex items-center justify-center space-x-2">
+                                <span>Calculate Project Estimate</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                            <button onclick="navigateTo('portfolio')"
+                                class="px-8 py-4 bg-navy-800 hover:bg-navy-700 text-slate-200 font-bold rounded-xl border border-navy-700 transition text-center flex items-center justify-center space-x-2">
+                                <span>Interactive Quality Comparison</span>
+                                <i class="fa-solid fa-sliders text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Log Track Simulator Visual -->
+                    <div class="lg:col-span-5">
+                        <div
+                            class="bg-navy-900 border border-navy-700 rounded-2xl shadow-2xl p-6 relative overflow-hidden log-grid-bg">
+                            <div class="flex justify-between items-center pb-4 mb-4 border-b border-navy-700">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                                    <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                                    <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+                                    <span
+                                        class="text-xs text-slate-400 font-mono-code ml-2">DIGITIZED_WELL_01.LAS</span>
+                                </div>
+                                <span
+                                    class="px-2.5 py-0.5 bg-tealacc/20 text-tealacc-light text-[11px] font-mono-code rounded">QC
+                                    APPROVED</span>
+                            </div>
+
+                            <!-- Live Track Display -->
+                            <div class="space-y-4 font-mono-code text-xs">
+                                <div class="bg-navy-950 p-3 rounded-xl border border-navy-800">
+                                    <div class="flex justify-between text-slate-400 mb-1">
+                                        <span>TRACK 1: Gamma Ray (GR)</span>
+                                        <span class="text-gold font-bold">45.2 GAPI</span>
+                                    </div>
+                                    <div class="w-full bg-navy-800 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-gold h-full w-[65%] rounded-full"></div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-navy-950 p-3 rounded-xl border border-navy-800">
+                                    <div class="flex justify-between text-slate-400 mb-1">
+                                        <span>TRACK 2: Deep Resistivity (ILD)</span>
+                                        <span class="text-electric-light font-bold">12.8 OHMM</span>
+                                    </div>
+                                    <div class="w-full bg-navy-800 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-electric h-full w-[82%] rounded-full"></div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-navy-950 p-3 rounded-xl border border-navy-800">
+                                    <div class="flex justify-between text-slate-400 mb-1">
+                                        <span>TRACK 3: Bulk Density (RHOB)</span>
+                                        <span class="text-tealacc-light font-bold">2.45 G/C3</span>
+                                    </div>
+                                    <div class="w-full bg-navy-800 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-tealacc h-full w-[48%] rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="mt-6 pt-4 border-t border-navy-800 flex justify-between items-center text-xs text-slate-400">
+                                <span>Depth Interval: <strong class="text-white">1,200m - 4,850m</strong></span>
+                                <span class="text-electric-light"><i class="fa-solid fa-check mr-1"></i> CWLS 2.0
+                                    Compliant</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Stats Bar Section -->
+            <div class="py-12 bg-navy-900 border-b border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div class="p-4 bg-navy-950/50 rounded-xl border border-navy-800">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono-code text-electric-light">
+                            15,000+</div>
+                        <div class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">Logs Digitized
+                        </div>
+                    </div>
+                    <div class="p-4 bg-navy-950/50 rounded-xl border border-navy-800">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono-code text-tealacc-light">
+                            99.9%</div>
+                        <div class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">Depth Match
+                            Accuracy</div>
+                    </div>
+                    <div class="p-4 bg-navy-950/50 rounded-xl border border-navy-800">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono-code text-gold">100+</div>
+                        <div class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">Global E&P Clients
+                        </div>
+                    </div>
+                    <div class="p-4 bg-navy-950/50 rounded-xl border border-navy-800">
+                        <div class="text-3xl sm:text-4xl font-extrabold text-white font-mono-code text-white">24/7</div>
+                        <div class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">Processing Support
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlights Grid -->
+            <div class="py-20 bg-navy-950">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <span
+                            class="text-electric-light text-xs font-bold uppercase tracking-widest bg-electric/10 px-3 py-1 rounded-full border border-electric/20">Core
+                            Competencies</span>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-4">Complete Subsurface Data
+                            Conversion</h2>
+                        <p class="text-slate-400 mt-2 text-sm sm:text-base">We handle complex multi-track logs,
+                            non-linear grid scales, faded paper scans, and legacy archives.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div
+                            class="bg-navy-900 border border-navy-800 rounded-2xl p-7 hover:border-electric/50 transition">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-electric/10 border border-electric/30 flex items-center justify-center text-electric-light text-xl mb-5">
+                                <i class="fa-solid fa-file-waveform"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">LAS & ASCII Conversion</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-4">Digitizing linear, logarithmic, and
+                                split scale raster curves into structured CWLS LAS files with full header indexing.</p>
+                            <button onclick="navigateTo('services')"
+                                class="text-xs font-bold text-electric-light hover:text-white transition flex items-center">Learn
+                                More <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
+                        </div>
+
+                        <div
+                            class="bg-navy-900 border border-navy-800 rounded-2xl p-7 hover:border-electric/50 transition">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-tealacc/10 border border-tealacc/30 flex items-center justify-center text-tealacc-light text-xl mb-5">
+                                <i class="fa-solid fa-globe"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">GIS & Base Map Digitizing</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-4">Transforming paper geological maps,
+                                shot point location maps, and well location grids into georeferenced shapefiles.</p>
+                            <button onclick="navigateTo('services')"
+                                class="text-xs font-bold text-tealacc-light hover:text-white transition flex items-center">Learn
+                                More <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
+                        </div>
+
+                        <div
+                            class="bg-navy-900 border border-navy-800 rounded-2xl p-7 hover:border-electric/50 transition">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl mb-5">
+                                <i class="fa-solid fa-microscope"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">Mud & Core Log Entry</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-4">Structured data extraction for
+                                lithology percentages, ROP curves, gas readings, and routine core analysis results.</p>
+                            <button onclick="navigateTo('services')"
+                                class="text-xs font-bold text-gold hover:text-white transition flex items-center">Learn
+                                More <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials -->
+            <div class="py-20 bg-navy-900 border-t border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8">
+                    <div class="text-center max-w-2xl mx-auto mb-12">
+                        <span
+                            class="text-gold text-xs font-bold uppercase tracking-widest bg-gold/10 px-3 py-1 rounded-full border border-gold/20">Client
+                            Feedback</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-3">Trusted by Geoscientists & Reservoir
+                            Engineers</h2>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-navy-950 p-6 rounded-2xl border border-navy-800">
+                            <div class="flex text-gold text-xs mb-3 space-x-1">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="text-slate-300 text-xs italic leading-relaxed mb-4">"Well Log Data Solution
+                                converted over 400 vintage raster logs from our offshore block within two weeks. The LAS
+                                outputs loaded into Techlog without a single depth alignment error."</p>
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">Senior Petrophysicist</span>
+                                <span class="text-slate-500">Independent Exploration Corp.</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-navy-950 p-6 rounded-2xl border border-navy-800">
+                            <div class="flex text-gold text-xs mb-3 space-x-1">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="text-slate-300 text-xs italic leading-relaxed mb-4">"Their ability to handle log
+                                curves on non-linear logarithmic grids and faded blueprints saved us months of manual
+                                work during our reservoir study."</p>
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">Lead Geoscience Data Manager</span>
+                                <span class="text-slate-500">Middle East Petroleum Services</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-navy-950 p-6 rounded-2xl border border-navy-800">
+                            <div class="flex text-gold text-xs mb-3 space-x-1">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="text-slate-300 text-xs italic leading-relaxed mb-4">"Outstanding turn-around speed
+                                and extremely responsive technical support. Their cost estimator gave us an exact quote
+                                with no hidden charges."</p>
+                            <div class="text-xs">
+                                <span class="font-bold text-white block">Geology Team Lead</span>
+                                <span class="text-slate-500">Energy Exploration Ltd.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 2: SERVICES PAGE ================= -->
+        <section id="page-services" class="spa-page hidden">
+            <div class="py-16 bg-navy-900 border-b border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span
+                        class="text-electric-light text-xs font-bold uppercase tracking-widest bg-electric/10 px-3 py-1 rounded-full border border-electric/20">End-to-End
+                        Digitization</span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white mt-4">Our Subsurface Digitizing Services
+                    </h1>
+                    <p class="text-slate-400 mt-3 text-base max-w-2xl mx-auto">Discover our full range of petrophysical,
+                        geophysical, and geological data digitizing offerings tailored for E&P companies.</p>
+                </div>
+            </div>
+
+            <div class="py-20 bg-navy-950">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-16">
+
+                    <!-- Service 1 -->
+                    <div
+                        class="grid lg:grid-cols-12 gap-8 items-center bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                        <div class="lg:col-span-7 space-y-4">
+                            <span class="text-electric-light font-mono-code text-xs font-bold uppercase">SERVICE
+                                01</span>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-white">Well Log Digitizing (LAS / ASCII
+                                Conversion)</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                High-precision manual and semi-automated vectorization of paper logs, TIFF images, and
+                                PDF files into industry-standard LAS (CWLS 2.0 / 3.0) and ASCII formats.
+                            </p>
+                            <ul class="grid sm:grid-cols-2 gap-2 text-xs text-slate-300 font-medium pt-2">
+                                <li><i class="fa-solid fa-check text-electric-light mr-2"></i> Gamma Ray, Resistivity,
+                                    Sonic Curves</li>
+                                <li><i class="fa-solid fa-check text-electric-light mr-2"></i> Linear, Logarithmic, &
+                                    Split Scales</li>
+                                <li><i class="fa-solid fa-check text-electric-light mr-2"></i> Continuous Depth
+                                    Alignment</li>
+                                <li><i class="fa-solid fa-check text-electric-light mr-2"></i> Complete Well Header
+                                    Metadata Capturing</li>
+                            </ul>
+                        </div>
+                        <div
+                            class="lg:col-span-5 bg-navy-950 p-6 rounded-xl border border-navy-800 font-mono-code text-xs">
+                            <span class="text-slate-400 block mb-2">// Sample Output Structure</span>
+                            <div class="text-gold">~CURVE INFORMATION</div>
+                            <div class="text-slate-300">DEPT.M : 1 Depth Index</div>
+                            <div class="text-slate-300">GR.GAPI : 2 Gamma Ray</div>
+                            <div class="text-slate-300">RD.OHMM : 3 Deep Resistivity</div>
+                            <div class="text-slate-300">DT.US/F : 4 Sonic Travel Time</div>
+                        </div>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div
+                        class="grid lg:grid-cols-12 gap-8 items-center bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                        <div class="lg:col-span-7 space-y-4">
+                            <span class="text-tealacc-light font-mono-code text-xs font-bold uppercase">SERVICE
+                                02</span>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-white">Seismic Data Vectorization & Map
+                                Digitizing</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Conversion of paper seismic sections, shot point maps, structural contour maps, and base
+                                maps into georeferenced GIS layers and SEGY-ready vector trajectories.
+                            </p>
+                            <ul class="grid sm:grid-cols-2 gap-2 text-xs text-slate-300 font-medium pt-2">
+                                <li><i class="fa-solid fa-check text-tealacc-light mr-2"></i> Shot Point Location Maps
+                                </li>
+                                <li><i class="fa-solid fa-check text-tealacc-light mr-2"></i> Contour Level
+                                    Vectorization</li>
+                                <li><i class="fa-solid fa-check text-tealacc-light mr-2"></i> Shapefile & GeoJSON
+                                    Exports</li>
+                                <li><i class="fa-solid fa-check text-tealacc-light mr-2"></i> WGS84 / UTM Coordinate
+                                    Projection</li>
+                            </ul>
+                        </div>
+                        <div
+                            class="lg:col-span-5 bg-navy-950 p-6 rounded-xl border border-navy-800 font-mono-code text-xs">
+                            <span class="text-slate-400 block mb-2">// GIS Vector Attributes</span>
+                            <div class="text-tealacc-light">LAYER: Seismic_Lines_2D</div>
+                            <div class="text-slate-300">PROJ: UTM Zone 43N</div>
+                            <div class="text-slate-300">ATTRIB: Line_ID, SP_Start, SP_End</div>
+                        </div>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div
+                        class="grid lg:grid-cols-12 gap-8 items-center bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                        <div class="lg:col-span-7 space-y-4">
+                            <span class="text-gold font-mono-code text-xs font-bold uppercase">SERVICE 03</span>
+                            <h2 class="text-2xl sm:text-3xl font-bold text-white">Mud Log & Composite Log Digitizing
+                            </h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Digitizing complex mud logging charts including Rate of Penetration (ROP), gas
+                                chromatograph tracks (C1, C2, C3, C4, iC5), lithology percentage columns, and geological
+                                remarks.
+                            </p>
+                            <ul class="grid sm:grid-cols-2 gap-2 text-xs text-slate-300 font-medium pt-2">
+                                <li><i class="fa-solid fa-check text-gold mr-2"></i> Total Gas & Chromatograph Tracks
+                                </li>
+                                <li><i class="fa-solid fa-check text-gold mr-2"></i> Lithology Percentage Extraction
+                                </li>
+                                <li><i class="fa-solid fa-check text-gold mr-2"></i> ROP Curve Vectorization</li>
+                                <li><i class="fa-solid fa-check text-gold mr-2"></i> Show & Cuttings Descriptions Entry
+                                </li>
+                            </ul>
+                        </div>
+                        <div
+                            class="lg:col-span-5 bg-navy-950 p-6 rounded-xl border border-navy-800 font-mono-code text-xs">
+                            <span class="text-slate-400 block mb-2">// Mud Log Output Example</span>
+                            <div class="text-gold">DEPTH: 2450.0m - 2452.0m</div>
+                            <div class="text-slate-300">LITHOLOGY: Sandstone 70%, Shale 30%</div>
+                            <div class="text-slate-300">TGAS: 450 units (C1: 85%, C2: 10%)</div>
+                        </div>
+                    </div>
+
+                    <!-- Service 4 & 5 Grid -->
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                            <span class="text-electric-light font-mono-code text-xs font-bold uppercase">SERVICE
+                                04</span>
+                            <h3 class="text-xl font-bold text-white mt-2 mb-3">Core & Petro-physical Data Entry</h3>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-4">Converting paper core analysis
+                                reports (Routine Core Analysis RCA and Special Core Analysis SCAL) into clean
+                                tab-delimited digital spreadsheets.</p>
+                            <ul class="text-xs text-slate-300 space-y-2">
+                                <li><i class="fa-solid fa-check text-electric-light mr-2"></i> Porosity, Permeability,
+                                    Grain Density</li>
+                                <li><i class="fa-solid fa-check text-electric-light mr-2"></i> Capillary Pressure &
+                                    Relative Permeability</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                            <span class="text-tealacc-light font-mono-code text-xs font-bold uppercase">SERVICE
+                                05</span>
+                            <h3 class="text-xl font-bold text-white mt-2 mb-3">Quality Control (QC) & Data Audit</h3>
+                            <p class="text-slate-300 text-xs leading-relaxed mb-4">Independent audit of third-party LAS
+                                files, depth calibration checks, unit normalization, mnemonic standardization, and
+                                header completion.</p>
+                            <ul class="text-xs text-slate-300 space-y-2">
+                                <li><i class="fa-solid fa-check text-tealacc-light mr-2"></i> Depth Step Standardization
+                                </li>
+                                <li><i class="fa-solid fa-check text-tealacc-light mr-2"></i> Mnemonic Harmonization
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 3: TECH SPECS PAGE ================= -->
+        <section id="page-specs" class="spa-page hidden">
+            <div class="py-16 bg-navy-900 border-b border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span
+                        class="text-gold text-xs font-bold uppercase tracking-widest bg-gold/10 px-3 py-1 rounded-full border border-gold/20">Technical
+                        Excellence</span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white mt-4">Supported Formats & Specifications
+                    </h1>
+                    <p class="text-slate-400 mt-3 text-base max-w-2xl mx-auto">Explore our strict quality standards,
+                        supported input/output formats, and calibration protocols.</p>
+                </div>
+            </div>
+
+            <div class="py-20 bg-navy-950">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-12">
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Input Formats -->
+                        <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <i class="fa-solid fa-file-import text-electric-light mr-3"></i> Supported Input Formats
+                            </h3>
+                            <div class="space-y-3 text-xs text-slate-300">
+                                <div
+                                    class="bg-navy-950 p-3 rounded-xl border border-navy-800 flex justify-between items-center">
+                                    <span class="font-bold text-white">Raster Images</span>
+                                    <span class="text-slate-400">TIFF, JPEG, PNG, BMP (Greyscale/Color)</span>
+                                </div>
+                                <div
+                                    class="bg-navy-950 p-3 rounded-xl border border-navy-800 flex justify-between items-center">
+                                    <span class="font-bold text-white">Document Formats</span>
+                                    <span class="text-slate-400">PDF (Multi-page / Single Continuous Roll)</span>
+                                </div>
+                                <div
+                                    class="bg-navy-950 p-3 rounded-xl border border-navy-800 flex justify-between items-center">
+                                    <span class="font-bold text-white">Physical Media</span>
+                                    <span class="text-slate-400">Blueprints, Film Negatives, Sepia Prints</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Output Formats -->
+                        <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <i class="fa-solid fa-file-export text-tealacc-light mr-3"></i> Output Deliverable
+                                Formats
+                            </h3>
+                            <div class="space-y-3 text-xs text-slate-300">
+                                <div
+                                    class="bg-navy-950 p-3 rounded-xl border border-navy-800 flex justify-between items-center">
+                                    <span class="font-bold text-white">CWLS LAS Standards</span>
+                                    <span class="text-slate-400">LAS 1.2, LAS 2.0, LAS 3.0</span>
+                                </div>
+                                <div
+                                    class="bg-navy-950 p-3 rounded-xl border border-navy-800 flex justify-between items-center">
+                                    <span class="font-bold text-white">Binary / Exchange</span>
+                                    <span class="text-slate-400">DLIS, LIS, ASCII Tabular (.TXT/.CSV)</span>
+                                </div>
+                                <div
+                                    class="bg-navy-950 p-3 rounded-xl border border-navy-800 flex justify-between items-center">
+                                    <span class="font-bold text-white">GIS Spatial</span>
+                                    <span class="text-slate-400">ESRI Shapefile (.shp), GeoJSON, KML</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calibration & Accuracy Specifications -->
+                    <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                        <h3 class="text-2xl font-bold text-white mb-6">Vertical Depth Calibration & Accuracy Metrics
+                        </h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="bg-navy-950 p-6 rounded-xl border border-navy-800">
+                                <div class="text-electric-light text-xl mb-2"><i class="fa-solid fa-ruler-vertical"></i>
+                                </div>
+                                <h4 class="font-bold text-white text-sm mb-2">Depth Indexing</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">Continuous depth calibration
+                                    accounting for paper stretch, shrinkage, and scanning skew with user-defined sample
+                                    increments (e.g., 0.1m or 0.5ft).</p>
+                            </div>
+
+                            <div class="bg-navy-950 p-6 rounded-xl border border-navy-800">
+                                <div class="text-tealacc-light text-xl mb-2"><i class="fa-solid fa-sliders"></i></div>
+                                <h4 class="font-bold text-white text-sm mb-2">Non-Linear Scales</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">Full mathematical calibration for
+                                    logarithmic grids (1, 10, 100, 1000 OHMM), split scales, and wrapped curve tracks.
+                                </p>
+                            </div>
+
+                            <div class="bg-navy-950 p-6 rounded-xl border border-navy-800">
+                                <div class="text-gold text-xl mb-2"><i class="fa-solid fa-shield-check"></i></div>
+                                <h4 class="font-bold text-white text-sm mb-2">Quality Audit</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">Dual-pass manual quality control
+                                    comparison ensuring digitized curves match the original raster trace to within 99.8%
+                                    precision.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 4: PORTFOLIO SHOWCASE PAGE ================= -->
+        <section id="page-portfolio" class="spa-page hidden">
+            <div class="py-16 bg-navy-900 border-b border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span
+                        class="text-electric-light text-xs font-bold uppercase tracking-widest bg-electric/10 px-3 py-1 rounded-full border border-electric/20">Quality
+                        Verification</span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white mt-4">Raster Scans vs Digitized LAS Curve
+                        Showcase</h1>
+                    <p class="text-slate-400 mt-3 text-base max-w-2xl mx-auto">Use our interactive before-and-after
+                        comparison slider to see how we restore legacy raster logs into clean digital LAS vectors.</p>
+                </div>
+            </div>
+
+            <div class="py-20 bg-navy-950">
+                <div class="max-w-5xl mx-auto px-4 sm:px-8">
+
+                    <!-- Interactive Comparison Tool Container -->
+                    <div class="bg-navy-900 border border-navy-800 rounded-2xl p-6 shadow-2xl">
+                        <div
+                            class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-navy-800 gap-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-white">Interactive Depth Track Alignment</h3>
+                                <p class="text-xs text-slate-400">Toggle or adjust slider to compare raw scanned image
+                                    with digitized LAS vector overlay.</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="setCompareMode('side')" id="btnModeSide"
+                                    class="px-3 py-1.5 bg-electric text-white text-xs font-semibold rounded-lg shadow">Side-by-Side
+                                    View</button>
+                                <button onclick="setCompareMode('overlay')" id="btnModeOverlay"
+                                    class="px-3 py-1.5 bg-navy-800 text-slate-300 text-xs font-semibold rounded-lg">Overlay
+                                    Toggle</button>
+                            </div>
+                        </div>
+
+                        <!-- Side By Side Display Box -->
+                        <div id="compareSideView" class="grid md:grid-cols-2 gap-6">
+                            <!-- Left: Raw Scanned Log -->
+                            <div class="bg-navy-950 border border-navy-800 rounded-xl p-4 relative">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-red-400 uppercase"><i
+                                            class="fa-solid fa-image mr-1"></i> Scanned Raster Log (PDF/TIFF)</span>
+                                    <span class="text-[10px] font-mono-code text-slate-500">RAW_BLUEPRINT.TIF</span>
+                                </div>
+                                <div
+                                    class="bg-slate-900 border border-slate-800 rounded-lg p-4 h-80 flex flex-col justify-between font-mono-code text-[11px] text-slate-500 overflow-hidden relative opacity-70">
+                                    <div class="absolute inset-0 bg-repeat bg-center opacity-20"
+                                        style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 10px 10px;">
+                                    </div>
+                                    <div class="border-b border-slate-700 pb-2 text-center text-slate-400 font-bold">
+                                        1:200 SCALE - DEPTH TRACK</div>
+                                    <div class="space-y-8 my-auto border-l border-r border-slate-700 px-4 py-2">
+                                        <div class="flex justify-between"><span>2400m</span><span
+                                                class="text-slate-600">~~~~~ (Faded)</span></div>
+                                        <div class="flex justify-between"><span>2450m</span><span
+                                                class="text-slate-600">--?-- (Paper Crease)</span></div>
+                                        <div class="flex justify-between"><span>2500m</span><span
+                                                class="text-slate-600">~~~~~ (Faded)</span></div>
+                                    </div>
+                                    <div class="border-t border-slate-700 pt-2 text-center text-red-400 text-[10px]">
+                                        Uncalibrated Raster Scan</div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Digitized LAS Vector -->
+                            <div class="bg-navy-950 border border-navy-800 rounded-xl p-4 relative">
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-xs font-bold text-tealacc-light uppercase"><i
+                                            class="fa-solid fa-chart-line mr-1"></i> Digitized LAS Curve Vector</span>
+                                    <span
+                                        class="text-[10px] font-mono-code text-tealacc-light">OUTPUT_DIGITIZED.LAS</span>
+                                </div>
+                                <div
+                                    class="bg-navy-950 border border-navy-800 rounded-lg p-4 h-80 flex flex-col justify-between font-mono-code text-[11px] text-slate-300 relative overflow-hidden">
+                                    <div class="border-b border-navy-800 pb-2 flex justify-between font-bold text-gold">
+                                        <span>GR (0-150)</span>
+                                        <span>RES (0.2-2000)</span>
+                                    </div>
+                                    <div class="space-y-6 my-auto border-l border-r border-navy-800 px-4 py-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-slate-400">2400.0m</span>
+                                            <div class="w-24 bg-gold/20 h-1.5 rounded-full">
+                                                <div class="bg-gold h-full w-[45%]"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-slate-400">2450.0m</span>
+                                            <div class="w-24 bg-electric/20 h-1.5 rounded-full">
+                                                <div class="bg-electric h-full w-[80%]"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-slate-400">2500.0m</span>
+                                            <div class="w-24 bg-tealacc/20 h-1.5 rounded-full">
+                                                <div class="bg-tealacc h-full w-[60%]"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="border-t border-navy-800 pt-2 text-center text-tealacc-light text-[10px]">
+                                        Depth Aligned LAS 2.0 Export Ready</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overlay Toggle Mode View (Hidden by default) -->
+                        <div id="compareOverlayView" class="hidden">
+                            <div
+                                class="relative bg-navy-950 border border-navy-800 rounded-xl p-8 text-center space-y-6">
+                                <div
+                                    class="inline-block px-4 py-1.5 bg-electric/20 text-electric-light rounded-full text-xs font-bold">
+                                    Overlay Precision Alignment Active
+                                </div>
+                                <p class="text-slate-300 text-xs max-w-lg mx-auto">
+                                    Our double-pass vectorization engine overlays the extracted mathematical curve
+                                    vector directly over the high-resolution scanned raster image to guarantee zero
+                                    drift across depth intervals up to 20,000 feet.
+                                </p>
+                                <div
+                                    class="p-6 bg-navy-900 border border-navy-800 rounded-xl font-mono-code text-xs text-left max-w-md mx-auto space-y-2">
+                                    <div class="text-gold">Depth Match Deviation: &lt; 0.05 meters</div>
+                                    <div class="text-electric-light">Mnemonic Standardization: CWLS Standard</div>
+                                    <div class="text-tealacc-light">Header QC Status: 100% Passed</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 5: COST ESTIMATOR PAGE ================= -->
+        <section id="page-estimator" class="spa-page hidden">
+            <div class="py-16 bg-navy-900 border-b border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span
+                        class="text-electric-light text-xs font-bold uppercase tracking-widest bg-electric/10 px-3 py-1 rounded-full border border-electric/20">Transparent
+                        Pricing</span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white mt-4">Interactive Cost Estimator
+                        Calculator</h1>
+                    <p class="text-slate-400 mt-3 text-base max-w-2xl mx-auto">Configure your well log digitization
+                        project parameters to get a live, transparent quote estimate.</p>
+                </div>
+            </div>
+
+            <div class="py-20 bg-navy-950">
+                <div class="max-w-5xl mx-auto px-4 sm:px-8">
+
+                    <div class="grid lg:grid-cols-12 gap-8 items-start">
+
+                        <!-- Inputs Form -->
+                        <div class="lg:col-span-7 bg-navy-900 border border-navy-800 rounded-2xl p-6 sm:p-8 space-y-6">
+                            <h3 class="text-xl font-bold text-white border-b border-navy-800 pb-3">Project
+                                Specifications</h3>
+
+                            <!-- Log Type -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-300 mb-2">Log
+                                    Category</label>
+                                <select id="estLogType" onchange="recalculatePrice()"
+                                    class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                    <option value="standard">Standard Wireline Log (GR, SP, RES)</option>
+                                    <option value="porosity">Porosity & Sonic Log (RHOB, NPHI, DT)</option>
+                                    <option value="mud">Mud Log / Lithology Log</option>
+                                    <option value="dipmeter">Dipmeter / 4-Arm Tadpole Log</option>
+                                    <option value="seismic">Seismic Map / Contours Digitizing</option>
+                                </select>
+                            </div>
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <!-- Number of Logs -->
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-2">Number of
+                                        Logs/Wells</label>
+                                    <input type="number" id="estNumLogs" min="1" max="500" value="5"
+                                        oninput="recalculatePrice()"
+                                        class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                </div>
+
+                                <!-- Measurement Unit -->
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-2">Depth
+                                        Unit</label>
+                                    <select id="estDepthUnit" onchange="recalculatePrice()"
+                                        class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                        <option value="meters">Meters (m)</option>
+                                        <option value="feet">Feet (ft)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <!-- Average Depth Interval -->
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-2">Avg. Depth
+                                        Interval per Log</label>
+                                    <input type="number" id="estAvgDepth" min="100" max="30000" value="2500"
+                                        oninput="recalculatePrice()"
+                                        class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                </div>
+
+                                <!-- Number of Curves -->
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-2">Curves per
+                                        Log</label>
+                                    <input type="number" id="estNumCurves" min="1" max="25" value="4"
+                                        oninput="recalculatePrice()"
+                                        class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                </div>
+                            </div>
+
+                            <!-- Turnaround Speed -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-300 mb-2">Turnaround
+                                    Requirement</label>
+                                <select id="estSpeed" onchange="recalculatePrice()"
+                                    class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                    <option value="standard">Standard Processing (3 - 5 Days)</option>
+                                    <option value="express">Express Delivery (24 - 48 Hours) [+25%]</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown Summary Box -->
+                        <div class="lg:col-span-5 bg-navy-900 border border-navy-800 rounded-2xl p-6 sm:p-8 space-y-6">
+                            <h3 class="text-xl font-bold text-white border-b border-navy-800 pb-3">Quote Summary</h3>
+
+                            <div class="space-y-3 font-mono-code text-xs">
+                                <div class="flex justify-between text-slate-400">
+                                    <span>Base Processing Rate:</span>
+                                    <span id="summaryBaseRate" class="text-white">$0.02 / unit</span>
+                                </div>
+                                <div class="flex justify-between text-slate-400">
+                                    <span>Total Depth Footages:</span>
+                                    <span id="summaryTotalDepth" class="text-white">12,500 m</span>
+                                </div>
+                                <div class="flex justify-between text-slate-400">
+                                    <span>Total Curve Tracks:</span>
+                                    <span id="summaryTotalCurves" class="text-white">20 Curves</span>
+                                </div>
+                                <div class="flex justify-between text-slate-400">
+                                    <span>Volume Discount:</span>
+                                    <span id="summaryDiscount" class="text-tealacc-light">-10% Applied</span>
+                                </div>
+                                <div
+                                    class="border-t border-navy-800 pt-3 flex justify-between items-center text-sm font-bold">
+                                    <span class="text-white">Estimated Total:</span>
+                                    <span id="summaryTotalPrice" class="text-2xl text-gold font-extrabold">$225.00
+                                        USD</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <button onclick="proceedWithEstimate()"
+                                    class="w-full py-4 bg-gradient-to-r from-electric to-electric-dark hover:from-electric-dark hover:to-electric text-white font-bold rounded-xl shadow-lg shadow-electric/30 transition text-center block">
+                                    Lock In Estimate & Submit Sample <i
+                                        class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                                </button>
+                                <p class="text-[11px] text-slate-500 text-center mt-3">* Final quote subject to sample
+                                    image quality inspection.</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 6: ABOUT US PAGE ================= -->
+        <section id="page-about" class="spa-page hidden">
+            <div class="py-16 bg-navy-900 border-b border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span
+                        class="text-electric-light text-xs font-bold uppercase tracking-widest bg-electric/10 px-3 py-1 rounded-full border border-electric/20">Who
+                        We Are</span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white mt-4">About Well Log Data Solution</h1>
+                    <p class="text-slate-400 mt-3 text-base max-w-2xl mx-auto">Providing petroleum operators, E&P firms,
+                        and geoscience consultancies with top-tier subsurface data conversion.</p>
+                </div>
+            </div>
+
+            <div class="py-20 bg-navy-950">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-16">
+
+                    <!-- Vision & Mission -->
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-electric/10 border border-electric/30 flex items-center justify-center text-electric-light text-xl mb-4">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white mb-3">Our Vision</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                To be the world's most reliable and technologically advanced subsurface data digitizing
+                                partner, unlocking legacy petroleum assets and bringing vintage geological archives into
+                                the digital oilfield era.
+                            </p>
+                        </div>
+
+                        <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-tealacc/10 border border-tealacc/30 flex items-center justify-center text-tealacc-light text-xl mb-4">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-white mb-3">Our Mission</h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                To deliver 99.9% accurate, CWLS-compliant digitized LAS, DLIS, and GIS deliverables
+                                through rigorous dual-pass Quality Control, state-of-the-art vectorization software, and
+                                dedicated petrophysical support.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Quality Assurance Workflow -->
+                    <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                        <h3 class="text-2xl font-bold text-white mb-8 text-center">Our 4-Stage Quality Control (QC)
+                            Workflow</h3>
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                            <div class="bg-navy-950 p-6 rounded-xl border border-navy-800 text-center">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-electric/20 text-electric-light font-bold flex items-center justify-center mx-auto mb-4">
+                                    1</div>
+                                <h4 class="font-bold text-white text-sm mb-2">Image Enhancement</h4>
+                                <p class="text-xs text-slate-400">Deskewing, despeckling, and contrast normalization of
+                                    scanned raster files.</p>
+                            </div>
+
+                            <div class="bg-navy-950 p-6 rounded-xl border border-navy-800 text-center">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-electric/20 text-electric-light font-bold flex items-center justify-center mx-auto mb-4">
+                                    2</div>
+                                <h4 class="font-bold text-white text-sm mb-2">Grid Calibration</h4>
+                                <p class="text-xs text-slate-400">Precision indexing of vertical depth and horizontal
+                                    curve scales (linear/logarithmic).</p>
+                            </div>
+
+                            <div class="bg-navy-950 p-6 rounded-xl border border-navy-800 text-center">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-electric/20 text-electric-light font-bold flex items-center justify-center mx-auto mb-4">
+                                    3</div>
+                                <h4 class="font-bold text-white text-sm mb-2">Curve Vectorization</h4>
+                                <p class="text-xs text-slate-400">Digitizing curve traces, resolving overlaps, wrapped
+                                    lines, and gap intervals.</p>
+                            </div>
+
+                            <div class="bg-navy-950 p-6 rounded-xl border border-navy-800 text-center">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-electric/20 text-electric-light font-bold flex items-center justify-center mx-auto mb-4">
+                                    4</div>
+                                <h4 class="font-bold text-white text-sm mb-2">Header & Audit QC</h4>
+                                <p class="text-xs text-slate-400">Metadata population, CWLS LAS validation, and final
+                                    petrophysicist review.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE 7: CONTACT US PAGE ================= -->
+        <section id="page-contact" class="spa-page hidden">
+            <div class="py-16 bg-navy-900 border-b border-navy-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 text-center">
+                    <span
+                        class="text-electric-light text-xs font-bold uppercase tracking-widest bg-electric/10 px-3 py-1 rounded-full border border-electric/20">Communication
+                        Portal</span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white mt-4">Contact Our Technical Team</h1>
+                    <p class="text-slate-400 mt-3 text-base max-w-2xl mx-auto">Send us your project inquiry, upload
+                        sample raster files, or consult directly with our petrophysicists.</p>
+                </div>
+            </div>
+
+            <div class="py-20 bg-navy-950">
+                <div class="max-w-7xl mx-auto px-4 sm:px-8 space-y-16">
+
+                    <div class="grid lg:grid-cols-12 gap-12">
+
+                        <!-- Contact Info Column -->
+                        <div class="lg:col-span-5 space-y-6">
+                            <h3 class="text-2xl font-bold text-white">Direct Contacts</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                We operate 24/7 to support oil & gas exploration projects across different global time
+                                zones.
+                            </p>
+
+                            <div class="space-y-4 pt-2">
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-electric/10 border border-electric/30 flex items-center justify-center text-electric-light text-lg shrink-0">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-slate-400 block">Phone Support</span>
+                                        <a href="tel:+919717126475"
+                                            class="text-white font-bold hover:text-electric-light transition">+91
+                                            9717126475</a>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-electric/10 border border-electric/30 flex items-center justify-center text-electric-light text-lg shrink-0">
+                                        <i class="fa-solid fa-envelope"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-slate-400 block">Email Desk</span>
+                                        <a href="mailto:info@welllogdigitizing.com"
+                                            class="text-white font-bold hover:text-electric-light transition">info@welllogdigitizing.com</a>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-4">
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-electric/10 border border-electric/30 flex items-center justify-center text-electric-light text-lg shrink-0">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-slate-400 block">Office Location</span>
+                                        <span class="text-white font-bold">Narela, Delhi, India</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Form with Drag Drop Placeholder -->
+                        <div class="lg:col-span-7 bg-navy-900 border border-navy-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+                            <h3 class="text-xl font-bold text-white mb-6">Send Message & Upload Sample</h3>
+                            <form id="mainContactForm" onsubmit="handleContactSubmit(event)" class="space-y-5">
+                                <div class="grid sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1.5">Full
+                                            Name</label>
+                                        <input type="text" id="cName" required placeholder="John Smith"
+                                            class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1.5">Corporate
+                                            Email</label>
+                                        <input type="email" id="cEmail" required placeholder="john@energycorp.com"
+                                            class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1.5">Project
+                                        Message / Notes</label>
+                                    <textarea id="cMessage" rows="3" required
+                                        placeholder="Specify log types, approximate depth footages, or output format needs..."
+                                        class="w-full bg-navy-950 border border-navy-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-electric"></textarea>
+                                </div>
+
+                                <!-- Drag & Drop File Container -->
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-300 mb-1.5">Sample Log
+                                        Attachment (Optional)</label>
+                                    <div id="dropZone" onclick="document.getElementById('fileInput').click()"
+                                        class="border-2 border-dashed border-navy-700 hover:border-electric rounded-xl p-6 text-center cursor-pointer transition bg-navy-950">
+                                        <input type="file" id="fileInput" class="hidden"
+                                            onchange="handleFileSelect(event)">
+                                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-electric-light mb-2"></i>
+                                        <p id="fileNameDisplay" class="text-xs text-slate-300">Click to select or drag &
+                                            drop sample PDF/TIFF/ZIP log scan</p>
+                                        <span class="text-[10px] text-slate-500 block mt-1">Maximum size: 50MB</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit"
+                                    class="w-full py-4 bg-gradient-to-r from-electric to-electric-dark hover:from-electric-dark hover:to-electric text-white font-bold rounded-xl shadow-lg shadow-electric/30 transition">
+                                    Submit Inquiry & Sample <i class="fa-solid fa-paper-plane ml-2 text-xs"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <!-- FAQ Accordion -->
+                    <div class="bg-navy-900 border border-navy-800 rounded-2xl p-8">
+                        <h3 class="text-2xl font-bold text-white mb-6 text-center">Frequently Asked Questions (FAQ)</h3>
+                        <div class="space-y-4 max-w-3xl mx-auto">
+
+                            <div class="bg-navy-950 border border-navy-800 rounded-xl p-4">
+                                <button onclick="toggleFaq(1)"
+                                    class="w-full text-left flex justify-between items-center font-bold text-sm text-white">
+                                    <span>What is the standard turnaround time for a batch of well logs?</span>
+                                    <i id="faqIcon-1" class="fa-solid fa-chevron-down text-electric-light text-xs"></i>
+                                </button>
+                                <p id="faqAnswer-1" class="text-xs text-slate-400 mt-3 hidden leading-relaxed">
+                                    Our standard turnaround for 5-10 typical well logs is 2 to 3 business days. Express
+                                    24-hour turnaround is also available for urgent operational deadlines.
+                                </p>
+                            </div>
+
+                            <div class="bg-navy-950 border border-navy-800 rounded-xl p-4">
+                                <button onclick="toggleFaq(2)"
+                                    class="w-full text-left flex justify-between items-center font-bold text-sm text-white">
+                                    <span>Can you digitize log curves on logarithmic or non-linear scales?</span>
+                                    <i id="faqIcon-2" class="fa-solid fa-chevron-down text-electric-light text-xs"></i>
+                                </button>
+                                <p id="faqAnswer-2" class="text-xs text-slate-400 mt-3 hidden leading-relaxed">
+                                    Yes! We specialize in complex logarithmic scales (e.g. 0.2 to 2000 ohm-m resistivity
+                                    tracks), split scales, wrapped curves, and non-standard grid layouts.
+                                </p>
+                            </div>
+
+                            <div class="bg-navy-950 border border-navy-800 rounded-xl p-4">
+                                <button onclick="toggleFaq(3)"
+                                    class="w-full text-left flex justify-between items-center font-bold text-sm text-white">
+                                    <span>Are digitized LAS files compatible with Petrel and Techlog?</span>
+                                    <i id="faqIcon-3" class="fa-solid fa-chevron-down text-electric-light text-xs"></i>
+                                </button>
+                                <p id="faqAnswer-3" class="text-xs text-slate-400 mt-3 hidden leading-relaxed">
+                                    All exported LAS 2.0 / 3.0 files strictly follow CWLS specifications and are 100%
+                                    verified compatible with Petrel, Techlog, GeoGraphix, IHS Harmony, and Interactive
+                                    Petrophysics (IP).
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Footer Section -->
+    <footer class="bg-navy-900 border-t border-navy-800 py-12 text-slate-400 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 grid md:grid-cols-4 gap-8 mb-8">
+            <div class="space-y-3">
+                <span class="text-white font-bold text-sm block">Well Log Data Solution</span>
+                <p class="leading-relaxed">Leading provider of petrophysical digitizing, LAS conversion, and geoscience
+                    spatial mapping services for global energy operators.</p>
+            </div>
+            <div>
+                <span class="text-white font-bold text-sm block mb-3">Quick Navigation</span>
+                <ul class="space-y-2">
+                    <li><button onclick="navigateTo('home')" class="hover:text-electric-light transition">Home</button>
+                    </li>
+                    <li><button onclick="navigateTo('services')"
+                            class="hover:text-electric-light transition">Services</button></li>
+                    <li><button onclick="navigateTo('specs')" class="hover:text-electric-light transition">Formats &
+                            Specs</button></li>
+                    <li><button onclick="navigateTo('portfolio')" class="hover:text-electric-light transition">Quality
+                            Showcase</button></li>
+                </ul>
+            </div>
+            <div>
+                <span class="text-white font-bold text-sm block mb-3">Tools & Services</span>
+                <ul class="space-y-2">
+                    <li><button onclick="navigateTo('estimator')" class="hover:text-electric-light transition">Cost
+                            Estimator</button></li>
+                    <li><button onclick="navigateTo('services')" class="hover:text-electric-light transition">Mud Log
+                            Vectorization</button></li>
+                    <li><button onclick="navigateTo('services')" class="hover:text-electric-light transition">GIS & Base
+                            Maps</button></li>
+                    <li><button onclick="navigateTo('contact')" class="hover:text-electric-light transition">Submit
+                            Sample Log</button></li>
+                </ul>
+            </div>
+            <div>
+                <span class="text-white font-bold text-sm block mb-3">Contact Support</span>
+                <p>Narela, Delhi, India</p>
+                <p class="mt-1">Phone: +91 9717126475</p>
+                <p class="mt-1">Email: info@welllogdigitizing.com</p>
+            </div>
+        </div>
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-8 pt-6 border-t border-navy-800 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 Well Log Data Solution. All Rights Reserved.</p>
+            <div class="flex space-x-6">
+                <a href="#"
+                    onclick="showModal('Privacy Policy', 'Data confidentiality is strictly enforced. All uploaded sample log files are encrypted and processed under non-disclosure agreements.'); return false;"
+                    class="hover:text-white transition">Privacy & NDA</a>
+                <a href="#"
+                    onclick="showModal('Terms of Service', 'Deliverables are quality controlled under CWLS LAS 2.0 standards.'); return false;"
+                    class="hover:text-white transition">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Router SPA Navigation
+        function navigateTo(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.spa-page');
+            pages.forEach(page => page.classList.add('hidden'));
+
+            // Show selected page
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+
+            // Update Active Navigation Styling
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('text-white', 'bg-navy-800', 'border-b-2', 'border-electric');
+                btn.classList.add('text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`nav-${pageId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('text-white', 'bg-navy-800');
+            }
+
+            // Close mobile drawer if open
+            document.getElementById('mobileMenu').classList.add('hidden');
+
+            // Scroll to top
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Global Modal Alert (Replacing standard window alert)
+        function showModal(title, message, isSuccess = true) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            const container = document.getElementById('modalIconContainer');
+            const icon = document.getElementById('modalIcon');
+
+            if (isSuccess) {
+                container.className = "w-12 h-12 rounded-xl bg-electric/20 border border-electric/40 flex items-center justify-center text-electric-light text-xl shrink-0";
+                icon.className = "fa-solid fa-circle-check";
+            } else {
+                container.className = "w-12 h-12 rounded-xl bg-gold/20 border border-gold/40 flex items-center justify-center text-gold text-xl shrink-0";
+                icon.className = "fa-solid fa-triangle-exclamation";
+            }
+
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
+
+        // Interactive Cost Calculator Engine
+        function recalculatePrice() {
+            const numLogs = parseInt(document.getElementById('estNumLogs').value) || 1;
+            const depthUnit = document.getElementById('estDepthUnit').value;
+            const avgDepth = parseFloat(document.getElementById('estAvgDepth').value) || 1000;
+            const numCurves = parseInt(document.getElementById('estNumCurves').value) || 1;
+            const speed = document.getElementById('estSpeed').value;
+            const logType = document.getElementById('estLogType').value;
+
+            // Base rate multiplier calculation
+            let unitRate = 0.02; // Base $0.02 per depth foot/meter curve
+            if (logType === 'porosity') unitRate = 0.025;
+            if (logType === 'mud') unitRate = 0.035;
+            if (logType === 'dipmeter') unitRate = 0.04;
+            if (logType === 'seismic') unitRate = 0.03;
+
+            const totalFootage = numLogs * avgDepth;
+            const totalCurveTracks = numLogs * numCurves;
+
+            let rawCost = totalFootage * (numCurves * 0.25) * unitRate;
+            if (rawCost < 45) rawCost = 45; // Minimum order baseline
+
+            // Apply discounts for volume
+            let discountPercent = 0;
+            if (numLogs >= 5) discountPercent = 10;
+            if (numLogs >= 20) discountPercent = 20;
+
+            let finalCost = rawCost * (1 - (discountPercent / 100));
+
+            // Express multiplier
+            if (speed === 'express') {
+                finalCost *= 1.25;
+            }
+
+            // Update UI
+            document.getElementById('summaryBaseRate').innerText = `$${unitRate.toFixed(3)} / unit`;
+            document.getElementById('summaryTotalDepth').innerText = `${totalFootage.toLocaleString()} ${depthUnit}`;
+            document.getElementById('summaryTotalCurves').innerText = `${totalCurveTracks} Curves`;
+            document.getElementById('summaryDiscount').innerText = discountPercent > 0 ? `-${discountPercent}% Applied` : '0%';
+            document.getElementById('summaryTotalPrice').innerText = `$${finalCost.toFixed(2)} USD`;
+        }
+
+        function proceedWithEstimate() {
+            const estimatedPrice = document.getElementById('summaryTotalPrice').innerText;
+            showModal("Estimate Saved", `Your estimate of ${estimatedPrice} has been locked. Redirecting to sample submission form.`);
+            setTimeout(() => {
+                navigateTo('contact');
+            }, 1200);
+        }
+
+        // Portfolio View Toggle Modes
+        function setCompareMode(mode) {
+            const sideView = document.getElementById('compareSideView');
+            const overlayView = document.getElementById('compareOverlayView');
+            const btnSide = document.getElementById('btnModeSide');
+            const btnOverlay = document.getElementById('btnModeOverlay');
+
+            if (mode === 'side') {
+                sideView.classList.remove('hidden');
+                overlayView.classList.add('hidden');
+                btnSide.className = "px-3 py-1.5 bg-electric text-white text-xs font-semibold rounded-lg shadow";
+                btnOverlay.className = "px-3 py-1.5 bg-navy-800 text-slate-300 text-xs font-semibold rounded-lg";
+            } else {
+                sideView.classList.add('hidden');
+                overlayView.classList.remove('hidden');
+                btnOverlay.className = "px-3 py-1.5 bg-electric text-white text-xs font-semibold rounded-lg shadow";
+                btnSide.className = "px-3 py-1.5 bg-navy-800 text-slate-300 text-xs font-semibold rounded-lg";
+            }
+        }
+
+        // Drag and Drop File Input
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                document.getElementById('fileNameDisplay').innerText = `Selected File: ${files[0].name} (${(files[0].size / 1024 / 1024).toFixed(2)} MB)`;
+            }
+        }
+
+        // Contact Form Submission
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('cName').value;
+            const email = document.getElementById('cEmail').value;
+            showModal("Inquiry Submitted", `Thank you, ${name}! Your request has been logged under ${email}. Our engineering desk will review your submission within 2 hours.`);
+            document.getElementById('mainContactForm').reset();
+            document.getElementById('fileNameDisplay').innerText = "Click to select or drag & drop sample PDF/TIFF/ZIP log scan";
+        }
+
+        // FAQ Toggle Accordion
+        function toggleFaq(id) {
+            const answer = document.getElementById(`faqAnswer-${id}`);
+            const icon = document.getElementById(`faqIcon-${id}`);
+            if (answer.classList.contains('hidden')) {
+                answer.classList.remove('hidden');
+                icon.className = "fa-solid fa-chevron-up text-electric-light text-xs";
+            } else {
+                answer.classList.add('hidden');
+                icon.className = "fa-solid fa-chevron-down text-electric-light text-xs";
+            }
+        }
+
+        // Initial setup on window load
+        window.onload = function () {
+            recalculatePrice();
+        };
+    </script>
+</body>
+
+</html>
