@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How It Works | WellLogs Data Solution">
+  <title>How It Works | WellLogs Data Solution</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* How It Works Specific Layout */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      align-items: stretch;
+    }
+
+    .step-card {
+      background: #fff;
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 8px;
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+
+    .step-number {
+      font-size: 36px;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 15px;
+      background: var(--bg-cream, #f9fafb);
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid var(--border, #e5e7eb);
+    }
+
+    .step-card h3 {
+      font-size: 22px;
+      color: #111;
+      margin-bottom: 12px;
+    }
+
+    .step-card p {
+      color: #555;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .workflow-band {
+      background: var(--bg-cream, #f9fafb);
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 8px;
+      padding: 40px;
+      margin-top: 50px;
+    }
+
+    .workflow-band h2 {
+      font-size: 24px;
+      color: #111;
+      margin-bottom: 15px;
+    }
+
+    .workflow-band p {
+      color: #555;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topline">
+    <div class="wrap"><span>WELLLOGS DATA SOLUTION</span><span>Well-log data • Technical support • Subsurface
+        solutions</span></div>
+  </div>
+
+  <header class="header">
+    <div class="wrap headrow">
+      <a class="logo" href="index.html">
+        <span class="logo-icon">W</span>
+        <span><strong>WellLogs</strong><small>DATA SOLUTION</small></span>
+      </a>
+      <button class="hamb" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="why-log-digitizing.html">Why Log Digitizing</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="calculator.html">Calculator</a>
+        <a href="contact.html">Contact</a>
+        <a class="nav-cta" href="login.html">Log In</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <div>
+          <div class="breadcrumb"><a href="index.html">Home</a> / How It Works</div>
+          <p class="kicker">WORKFLOW PROCESS</p>
+          <h1>From scanned records to usable files.</h1>
+        </div>
+        <p>We handle the entire digitization process from start to finish so your team can stay focused on subsurface
+          interpretation and field operations.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+
+        <div class="steps-grid">
+
+          <!-- Step 1 -->
+          <div class="step-card">
+            <div>
+              <div class="step-number">1</div>
+              <p class="kicker">INTAKE</p>
+              <h3>Send us your logs</h3>
+              <p>Upload your scanned paper records, TIFF images, or PDF well logs through secure submission or simple
+                email intake.</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step-card">
+            <div>
+              <div class="step-number">2</div>
+              <p class="kicker">PROCESSING</p>
+              <h3>We digitize the data</h3>
+              <p>Our team processes the log images, calibrates depth scales, vectors curve data, and performs rigorous
+                quality checks.</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step-card">
+            <div>
+              <div class="step-number">3</div>
+              <p class="kicker">DELIVERY</p>
+              <h3>Receive usable results</h3>
+              <p>Get clean, organized digital files (LAS & vector outputs) ready for immediate import into your
+                geoscience software platform.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Detail Info Band -->
+        <div class="workflow-band">
+          <p class="kicker">HANDS-OFF SOLUTION</p>
+          <h2>Built for simplicity</h2>
+          <p>Whether you have one log or one hundred, we make it easy. We do the heavy lifting of curve tracing and
+            formatting so you can focus on analysis, reservoir evaluation, and decision-making.</p>
+          <a class="btn" href="contact.html"
+            style="background:#111; color:#fff; text-decoration:none; display:inline-block; padding:12px 24px; border-radius:6px; font-weight:600;">Start
+            Your Project ↗</a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="logo" href="index.html"><span class="logo-icon">W</span><span><strong>WellLogs</strong><small>DATA
+              SOLUTION</small></span></a>
+        <p>Practical well-log data services and subsurface support for technical teams and projects.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <div class="footer-links"><a href="products.html">Products</a><a href="solutions.html">Solutions</a><a
+            href="custom-design.html">Custom Design</a><a href="about.html">About Us</a><a
+            href="contact.html">Contact</a></div>
+      </div>
+      <div>
+        <h4>Our Capabilities</h4>
+        <div class="footer-links"><a href="products.html">Well Log Processing</a><a href="products.html">Data
+            Management</a><a href="solutions.html">Interpretation Support</a><a href="custom-design.html">Custom
+            Workflows</a></div>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <div class="footer-links"><a href="contact.html">Request project details</a><a
+            href="mailto:info@welllogsdatasolution.com">info@welllogsdatasolution.com</a></div>
+      </div>
+    </div>
+    <div class="copyright">
+      <div class="wrap"><span>© <span data-year></span> WellLogs Data Solution. All rights
+          reserved.</span><span>Independent business website. Not affiliated with Ocean Instruments.</span></div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

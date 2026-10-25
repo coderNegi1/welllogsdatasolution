@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Project Calculator | WellLogs Data Solution">
+  <title>Calculator | WellLogs Data Solution</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Calculator Specific Layout Matching Contact Page */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    @media(max-width: 900px) {
+      .calc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .calc-box {
+      background: #fff;
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 8px;
+      padding: 35px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .calc-form .formgrid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .calc-form .field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .calc-form label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #111;
+    }
+
+    .calc-form select,
+    .calc-form input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 6px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    .calc-output {
+      background: var(--bg-cream, #f9fafb);
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 8px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .calc-output h3 {
+      font-size: 18px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border, #e5e7eb);
+      padding-bottom: 10px;
+      color: #111;
+    }
+
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #4b5563;
+    }
+
+    .calc-row strong {
+      color: #111;
+    }
+
+    .calc-total {
+      font-size: 22px;
+      font-weight: bold;
+      color: #111;
+      margin-top: 20px;
+      border-top: 2px solid var(--border, #e5e7eb);
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .calc-total span:last-child {
+      color: #2563eb;
+    }
+
+    .notice {
+      font-size: 12px;
+      color: #666;
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    .btn-start {
+      display: block;
+      text-align: center;
+      background: #111;
+      color: #fff;
+      padding: 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 20px;
+      transition: background 0.2s;
+    }
+
+    .btn-start:hover {
+      background: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topline">
+    <div class="wrap"><span>WELLLOGS DATA SOLUTION</span><span>Well-log data • Technical support • Subsurface
+        solutions</span></div>
+  </div>
+
+  <header class="header">
+    <div class="wrap headrow">
+      <a class="logo" href="index.html">
+        <span class="logo-icon">W</span>
+        <span><strong>WellLogs</strong><small>DATA SOLUTION</small></span>
+      </a>
+      <button class="hamb" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="why-log-digitizing.html">Why Log Digitizing</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="calculator.html">Calculator</a>
+        <a href="contact.html">Contact</a>
+        <a class="nav-cta" href="login.html">Log In</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <div>
+          <div class="breadcrumb"><a href="index.html">Home</a> / Calculator</div>
+          <p class="kicker">PROJECT CALCULATOR</p>
+          <h1>Estimate your digitization cost.</h1>
+        </div>
+        <p>Choose a project type, then enter a rough log count, footage per log, and curves per log to calculate your
+          instant estimate.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap calc-grid">
+
+        <!-- Left Box: Calculator Inputs Form -->
+        <div class="calc-box calc-form">
+          <p class="kicker">CONFIGURATION</p>
+          <h2 style="font-size:24px; margin-bottom:20px;">Project parameters</h2>
+
+          <div class="formgrid">
+            <div class="field full">
+              <label for="projectType">Project type / scale</label>
+              <select id="projectType" name="projectType">
+                <option value="single">Single (One individual well log, 1 to 4 curves) — $0.69 / curve / 100 ft</option>
+                <option value="small" selected>Small batch (A few wells or sample logs, 5 to 20) — $0.49 / curve / 100
+                  ft</option>
+                <option value="large">Large archive (Bulk legacy collection, our specialty) — Email for pricing</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="numLogs">Number of logs</label>
+              <input type="number" id="numLogs" value="1" min="1" max="500">
+            </div>
+
+            <div class="field">
+              <label for="wellFootage">Average feet per log (Well footage)</label>
+              <input type="number" id="wellFootage" value="5000" step="100" min="100">
+            </div>
+
+            <div class="field">
+              <label for="curvesPerLog">Curves per log</label>
+              <input type="number" id="curvesPerLog" value="1" min="1" max="20">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Box: Live Breakdown & Output -->
+        <div class="calc-output">
+          <div>
+            <p class="kicker" style="margin-bottom:8px;">ESTIMATE SUMMARY</p>
+            <h3>Estimate breakdown</h3>
+            <div class="calc-row"><span>Well footage:</span> <strong id="outFootage">5,000 ft</strong></div>
+            <div class="calc-row"><span>Curve footage:</span> <strong id="outCurveFootage">5,000 ft</strong></div>
+            <div class="calc-row"><span>Rate used:</span> <strong id="rateUsed">$0.69 / curve / 100 ft</strong></div>
+          </div>
+
+          <div>
+            <div class="calc-total">
+              <span>Project estimate:</span>
+              <span id="estimatedPrice">$34.50</span>
+            </div>
+            <p class="notice">Single and small batch estimates are calculated per curve per 100 feet, rounded up to the
+              next 100-foot interval. A $29.99 minimum applies to one-well projects. Large archives are quoted by email.
+            </p>
+            <a class="btn-start" href="contact.html">Start Project ↗</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="logo" href="index.html"><span class="logo-icon">W</span><span><strong>WellLogs</strong><small>DATA
+              SOLUTION</small></span></a>
+        <p>Practical well-log data services and subsurface support for technical teams and projects.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <div class="footer-links"><a href="products.html">Products</a><a href="solutions.html">Solutions</a><a
+            href="custom-design.html">Custom Design</a><a href="about.html">About Us</a><a
+            href="contact.html">Contact</a></div>
+      </div>
+      <div>
+        <h4>Our Capabilities</h4>
+        <div class="footer-links"><a href="products.html">Well Log Processing</a><a href="products.html">Data
+            Management</a><a href="solutions.html">Interpretation Support</a><a href="custom-design.html">Custom
+            Workflows</a></div>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <div class="footer-links"><a href="contact.html">Request project details</a><a
+            href="mailto:info@welllogsdatasolution.com">info@welllogsdatasolution.com</a></div>
+      </div>
+    </div>
+    <div class="copyright">
+      <div class="wrap"><span>© <span data-year></span> WellLogs Data Solution. All rights
+          reserved.</span><span>Independent business website. Not affiliated with Ocean Instruments.</span></div>
+    </div>
+  </footer>
+
+  <!-- CALCULATOR SCRIPT -->
+  <script>
+    const projectType = document.getElementById('projectType');
+    const numLogs = document.getElementById('numLogs');
+    const wellFootage = document.getElementById('wellFootage');
+    const curvesPerLog = document.getElementById('curvesPerLog');
+
+    const outFootage = document.getElementById('outFootage');
+    const outCurveFootage = document.getElementById('outCurveFootage');
+    const rateUsed = document.getElementById('rateUsed');
+    const estimatedPrice = document.getElementById('estimatedPrice');
+
+    function calculateCost() {
+      let type = projectType.value;
+      let logs = parseInt(numLogs.value) || 1;
+      let footage = parseFloat(wellFootage.value) || 0;
+      let curves = parseInt(curvesPerLog.value) || 1;
+
+      let rate = 0.49;
+      if (type === 'single') rate = 0.69;
+      if (type === 'large') {
+        outFootage.textContent = footage.toLocaleString() + ' ft';
+        outCurveFootage.textContent = (footage * curves).toLocaleString() + ' ft';
+        rateUsed.textContent = "Email for pricing";
+        estimatedPrice.textContent = "Custom Quote";
+        return;
+      }
+
+      let totalCurveFootage = footage * curves * logs;
+
+      rateUsed.textContent = `$${rate.toFixed(2)} / curve / 100 ft`;
+      outFootage.textContent = footage.toLocaleString() + ' ft';
+      outCurveFootage.textContent = totalCurveFootage.toLocaleString() + ' ft';
+
+      let total = (footage / 100) * curves * logs * rate;
+
+      let minFee = (type === 'single') ? 29.99 : 0;
+      if (total < minFee) total = minFee;
+
+      estimatedPrice.textContent = `$${total.toFixed(2)}`;
+    }
+
+    [projectType, numLogs, wellFootage, curvesPerLog].forEach(element => {
+      element.addEventListener('input', calculateCost);
+      element.addEventListener('change', calculateCost);
+    });
+
+    calculateCost();
+  </script>
+  <script src="script.js"></script>
+</body>
+
+</html>
