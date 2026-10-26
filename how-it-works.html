@@ -95,23 +95,42 @@
       <nav class="nav" aria-label="Main navigation">
         <a href="why-log-digitizing.html">Why Log Digitizing</a>
         <a href="how-it-works.html">How it works</a>
+
+        <!-- SERVICES DROPDOWN -->
+        <div class="nav-dropdown">
+          <a href="services.html" class="dropbtn">Services ▾</a>
+          <div class="dropdown-menu">
+            <a href="digitizing.html">Well Log Digitizing</a>
+            <a href="header-capturing.html">Header Capturing</a>
+            <a href="gis-mapping.html">GIS Mapping</a>
+            <a href="gamma-logs.html">Old Gamma Logs</a>
+            <a href="dipmeter.html">Dipmeter (Tadpoles)</a>
+            <a href="image-splicing.html">Image Splicing & Editing</a>
+          </div>
+        </div>
+
         <a href="pricing.html">Pricing</a>
         <a href="calculator.html">Calculator</a>
         <a href="contact.html">Contact</a>
-        <a class="nav-cta" href="login.html">Log In</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="page-hero">
-      <div class="wrap">
+    <section class="page-hero" style="position: relative; overflow: hidden; background-color: #1a0f0a;">
+      <!-- Background Image with Dark Overlay -->
+      <div
+        style="position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.75)), url('images/hero-bg.jpg'); background-size: cover; background-position: center; filter: sepia(10%) contrast(110%) brightness(0.8); z-index: 0;">
+      </div>
+
+      <div class="wrap" style="position: relative; z-index: 1;">
         <div>
-          <div class="breadcrumb"><a href="index.html">Home</a> / How It Works</div>
-          <p class="kicker">WORKFLOW PROCESS</p>
-          <h1>From scanned records to usable files.</h1>
+          <div class="breadcrumb"><a href="index.html" style="color: #facc15;">Home</a> / How It Works</div>
+          <p class="kicker" style="color: #facc15;">WORKFLOW PROCESS</p>
+          <h1 style="color: #ffffff;">From scanned records to usable files.</h1>
         </div>
-        <p>We handle the entire digitization process from start to finish so your team can stay focused on subsurface
+        <p style="color: rgba(255,255,255,0.8);">We handle the entire digitization process from start to finish so your
+          team can stay focused on subsurface
           interpretation and field operations.</p>
       </div>
     </section>

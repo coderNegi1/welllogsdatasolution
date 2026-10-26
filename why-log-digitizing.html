@@ -1,147 +1,234 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Why Log Digitizing | WellLogs Data Solution">
-<title>Why Log Digitizing | WellLogs Data Solution</title>
-<link rel="stylesheet" href="styles.css">
-<style>
-/* Why Log Digitizing Specific Layout */
-.benefits-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; align-items: stretch; margin-bottom: 50px; }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Why Log Digitizing | WellLogs Data Solution">
+  <title>Why Log Digitizing | WellLogs Data Solution</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Why Log Digitizing Specific Layout */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      align-items: stretch;
+      margin-bottom: 50px;
+    }
 
-.benefit-card { background: #fff; border: 1px solid var(--border, #e5e7eb); border-radius: 8px; padding: 40px 30px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-.benefit-card h3 { font-size: 22px; color: #111; margin-bottom: 12px; }
-.benefit-card p { color: #555; font-size: 15px; line-height: 1.6; }
+    .benefit-card {
+      background: #fff;
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 8px;
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
 
-.audience-band { background: var(--bg-cream, #f9fafb); border: 1px solid var(--border, #e5e7eb); border-radius: 8px; padding: 40px; margin-top: 20px; }
-.audience-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 25px; }
-.audience-item { background: #fff; border: 1px solid var(--border, #e5e7eb); padding: 20px; border-radius: 6px; }
-.audience-item h4 { font-size: 16px; color: #111; margin-bottom: 6px; }
-.audience-item p { font-size: 13px; color: #666; margin: 0; }
-</style>
+    .benefit-card h3 {
+      font-size: 22px;
+      color: #111;
+      margin-bottom: 12px;
+    }
+
+    .benefit-card p {
+      color: #555;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .audience-band {
+      background: var(--bg-cream, #f9fafb);
+      border: 1px solid var(--border, #e5e7eb);
+      border-radius: 8px;
+      padding: 40px;
+      margin-top: 20px;
+    }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .audience-item {
+      background: #fff;
+      border: 1px solid var(--border, #e5e7eb);
+      padding: 20px;
+      border-radius: 6px;
+    }
+
+    .audience-item h4 {
+      font-size: 16px;
+      color: #111;
+      margin-bottom: 6px;
+    }
+
+    .audience-item p {
+      font-size: 13px;
+      color: #666;
+      margin: 0;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="topline">
-  <div class="wrap"><span>WELLLOGS DATA SOLUTION</span><span>Well-log data • Technical support • Subsurface solutions</span></div>
-</div>
-
-<header class="header">
-  <div class="wrap headrow">
-    <a class="logo" href="index.html">
-      <span class="logo-icon">W</span>
-      <span><strong>WellLogs</strong><small>DATA SOLUTION</small></span>
-    </a>
-    <button class="hamb" aria-label="Toggle navigation" aria-expanded="false">☰</button>
-    <nav class="nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a class="active" href="why-log-digitizing.html">Why Log Digitizing</a>
-      <a href="how-it-works.html">How it works</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="calculator.html">Calculator</a>
-      <a href="contact.html">Contact</a>
-      <a class="nav-cta" href="contact.html">Request a Quote ↗</a>
-    </nav>
+  <div class="topline">
+    <div class="wrap"><span>WELLLOGS DATA SOLUTION</span><span>Well-log data • Technical support • Subsurface
+        solutions</span></div>
   </div>
-</header>
 
-<main>
-  <section class="page-hero">
-    <div class="wrap">
+  <header class="header">
+    <div class="wrap headrow">
+      <a class="logo" href="index.html">
+        <span class="logo-icon">W</span>
+        <span><strong>WellLogs</strong><small>DATA SOLUTION</small></span>
+      </a>
+      <button class="hamb" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="why-log-digitizing.html">Why Log Digitizing</a>
+        <a href="how-it-works.html">How it works</a>
+
+        <!-- SERVICES DROPDOWN -->
+        <div class="nav-dropdown">
+          <a href="services.html" class="dropbtn">Services ▾</a>
+          <div class="dropdown-menu">
+            <a href="digitizing.html">Well Log Digitizing</a>
+            <a href="header-capturing.html">Header Capturing</a>
+            <a href="gis-mapping.html">GIS Mapping</a>
+            <a href="gamma-logs.html">Old Gamma Logs</a>
+            <a href="dipmeter.html">Dipmeter (Tadpoles)</a>
+            <a href="image-splicing.html">Image Splicing & Editing</a>
+          </div>
+        </div>
+
+        <a href="pricing.html">Pricing</a>
+        <a href="calculator.html">Calculator</a>
+        <a href="contact.html">Contact</a>
+
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero" style="position: relative; overflow: hidden; background-color: #1a0f0a;">
+      <!-- Background Image with Dark Overlay -->
+      <div
+        style="position: absolute; inset: 0; background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.75)), url('IMG/HERO-IMAGE.png'); background-size: cover; background-position: center; filter: sepia(10%) contrast(110%) brightness(0.8); z-index: 0;">
+      </div>
+
+      <div class="wrap" style="position: relative; z-index: 1;">
+        <div>
+          <div class="breadcrumb"><a href="index.html" style="color: #facc15;">Home</a> / Why Log Digitizing</div>
+          <p class="kicker" style="color: #facc15;">WHY LOG DIGITIZING</p>
+          <h1 style="color: #ffffff;">A simpler way to digitize legacy log records.</h1>
+        </div>
+        <p style="color: rgba(255,255,255,0.8);">Transform physical well records into accessible digital assets. Your
+          well logs contain valuable subsurface
+          data—we make that data easier to access, analyze, store, and integrate into modern workflows.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="wrap">
+
+        <!-- Core Benefits Grid -->
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div>
+              <p class="kicker">ACCESSIBILITY</p>
+              <h3>Full-service from start to finish</h3>
+              <p>We handle the complete digitization process so your engineering and geology teams can stay focused on
+                interpretation, reservoir modeling, and field operations.</p>
+            </div>
+          </div>
+
+          <div class="benefit-card">
+            <div>
+              <p class="kicker">SIMPLICITY</p>
+              <h3>Built for simplicity</h3>
+              <p>Whether you have one log or one hundred, we do the heavy lifting. Just upload or email your scanned
+                records, and we convert them into clean, standardized LAS files.</p>
+            </div>
+          </div>
+
+          <div class="benefit-card">
+            <div>
+              <p class="kicker">MODERN OUTPUT</p>
+              <h3>Turn old records into working data</h3>
+              <p>Physical paper prints and uncalibrated TIFF images are hard to store and manage. Digitized logs allow
+                direct import into software like Petrel, Techlog, or Kingdom.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Who It's For Section -->
+        <div class="audience-band">
+          <p class="kicker">TARGET AUDIENCE</p>
+          <h2>Who it's for</h2>
+          <p>Built for teams working with legacy well records who need reliable digital data without spending internal
+            technical bandwidth on manual curve tracing.</p>
+
+          <div class="audience-grid">
+            <div class="audience-item">
+              <h4>Operators & Engineers</h4>
+              <p>Evaluate historic well performance and plan workovers with digital logs.</p>
+            </div>
+            <div class="audience-item">
+              <h4>Geologists & Geophysicists</h4>
+              <p>Import clean LAS files directly into subsurface modeling software.</p>
+            </div>
+            <div class="audience-item">
+              <h4>Data Teams & Brokers</h4>
+              <p>Organize, standardize, and archive legacy physical records efficiently.</p>
+            </div>
+            <div class="audience-item">
+              <h4>Subsurface Consultants</h4>
+              <p>Deliver high-precision interpretation reports backed by reliable digital curves.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
       <div>
-        <div class="breadcrumb"><a href="index.html">Home</a> / Why Log Digitizing</div>
-        <p class="kicker">WHY LOG DIGITIZING</p>
-        <h1>A simpler way to digitize legacy log records.</h1>
+        <a class="logo" href="index.html"><span class="logo-icon">W</span><span><strong>WellLogs</strong><small>DATA
+              SOLUTION</small></span></a>
+        <p>Practical well-log data services and subsurface support for technical teams and projects.</p>
       </div>
-      <p>Transform physical well records into accessible digital assets. Your well logs contain valuable subsurface data—we make that data easier to access, analyze, store, and integrate into modern workflows.</p>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="wrap">
-      
-      <!-- Core Benefits Grid -->
-      <div class="benefits-grid">
-        <div class="benefit-card">
-          <div>
-            <p class="kicker">ACCESSIBILITY</p>
-            <h3>Full-service from start to finish</h3>
-            <p>We handle the complete digitization process so your engineering and geology teams can stay focused on interpretation, reservoir modeling, and field operations.</p>
-          </div>
-        </div>
-
-        <div class="benefit-card">
-          <div>
-            <p class="kicker">SIMPLICITY</p>
-            <h3>Built for simplicity</h3>
-            <p>Whether you have one log or one hundred, we do the heavy lifting. Just upload or email your scanned records, and we convert them into clean, standardized LAS files.</p>
-          </div>
-        </div>
-
-        <div class="benefit-card">
-          <div>
-            <p class="kicker">MODERN OUTPUT</p>
-            <h3>Turn old records into working data</h3>
-            <p>Physical paper prints and uncalibrated TIFF images are hard to store and manage. Digitized logs allow direct import into software like Petrel, Techlog, or Kingdom.</p>
-          </div>
-        </div>
+      <div>
+        <h4>Explore</h4>
+        <div class="footer-links"><a href="why-log-digitizing.html">Why Log Digitizing</a><a
+            href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a
+            href="calculator.html">Calculator</a><a href="contact.html">Contact</a></div>
       </div>
-
-      <!-- Who It's For Section -->
-      <div class="audience-band">
-        <p class="kicker">TARGET AUDIENCE</p>
-        <h2>Who it's for</h2>
-        <p>Built for teams working with legacy well records who need reliable digital data without spending internal technical bandwidth on manual curve tracing.</p>
-
-        <div class="audience-grid">
-          <div class="audience-item">
-            <h4>Operators & Engineers</h4>
-            <p>Evaluate historic well performance and plan workovers with digital logs.</p>
-          </div>
-          <div class="audience-item">
-            <h4>Geologists & Geophysicists</h4>
-            <p>Import clean LAS files directly into subsurface modeling software.</p>
-          </div>
-          <div class="audience-item">
-            <h4>Data Teams & Brokers</h4>
-            <p>Organize, standardize, and archive legacy physical records efficiently.</p>
-          </div>
-          <div class="audience-item">
-            <h4>Subsurface Consultants</h4>
-            <p>Deliver high-precision interpretation reports backed by reliable digital curves.</p>
-          </div>
-        </div>
+      <div>
+        <h4>Our Capabilities</h4>
+        <div class="footer-links"><a href="products.html">Well Log Processing</a><a href="products.html">Data
+            Management</a><a href="solutions.html">Interpretation Support</a><a href="custom-design.html">Custom
+            Workflows</a></div>
       </div>
+      <div>
+        <h4>Contact</h4>
+        <div class="footer-links"><a href="contact.html">Request project details</a><a
+            href="mailto:info@welllogsdatasolution.com">info@welllogsdatasolution.com</a></div>
+      </div>
+    </div>
+    <div class="copyright">
+      <div class="wrap"><span>© <span data-year></span> WellLogs Data Solution. All rights
+          reserved.</span><span>Independent business website. Not affiliated with Ocean Instruments.</span></div>
+    </div>
+  </footer>
 
-    </div>
-  </section>
-</main>
-
-<footer class="footer">
-  <div class="wrap footer-grid">
-    <div>
-      <a class="logo" href="index.html"><span class="logo-icon">W</span><span><strong>WellLogs</strong><small>DATA SOLUTION</small></span></a>
-      <p>Practical well-log data services and subsurface support for technical teams and projects.</p>
-    </div>
-    <div>
-      <h4>Explore</h4>
-      <div class="footer-links"><a href="why-log-digitizing.html">Why Log Digitizing</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="calculator.html">Calculator</a><a href="contact.html">Contact</a></div>
-    </div>
-    <div>
-      <h4>Our Capabilities</h4>
-      <div class="footer-links"><a href="products.html">Well Log Processing</a><a href="products.html">Data Management</a><a href="solutions.html">Interpretation Support</a><a href="custom-design.html">Custom Workflows</a></div>
-    </div>
-    <div>
-      <h4>Contact</h4>
-      <div class="footer-links"><a href="contact.html">Request project details</a><a href="mailto:info@welllogsdatasolution.com">info@welllogsdatasolution.com</a></div>
-    </div>
-  </div>
-  <div class="copyright">
-    <div class="wrap"><span>© <span data-year></span> WellLogs Data Solution. All rights reserved.</span><span>Independent business website. Not affiliated with Ocean Instruments.</span></div>
-  </div>
-</footer>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>

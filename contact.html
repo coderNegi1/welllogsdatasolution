@@ -15,17 +15,32 @@
                 solutions</span></div>
     </div>
     <header class="header">
-        <div class="wrap headrow"><a class="logo" href="index.html"><span
-                    class="logo-icon">W</span><span><strong>WellLogs</strong><small>DATA
-                        SOLUTION</small></span></a><button class="hamb" aria-label="Toggle navigation"
-                aria-expanded="false">☰</button>
+        <div class="wrap headrow">
+            <a class="logo" href="index.html">
+                <span class="logo-icon">W</span>
+                <span><strong>WellLogs</strong><small>DATA SOLUTION</small></span>
+            </a>
+            <button class="hamb" aria-label="Toggle navigation" aria-expanded="false">☰</button>
             <nav class="nav" aria-label="Main navigation">
                 <a href="why-log-digitizing.html">Why Log Digitizing</a>
                 <a href="how-it-works.html">How it works</a>
+
+                <!-- SERVICES DROPDOWN -->
+                <div class="nav-dropdown">
+                    <a href="services.html" class="dropbtn">Services ▾</a>
+                    <div class="dropdown-menu">
+                        <a href="digitizing.html">Well Log Digitizing</a>
+                        <a href="header-capturing.html">Header Capturing</a>
+                        <a href="gis-mapping.html">GIS Mapping</a>
+                        <a href="gamma-logs.html">Old Gamma Logs</a>
+                        <a href="dipmeter.html">Dipmeter (Tadpoles)</a>
+                        <a href="image-splicing.html">Image Splicing & Editing</a>
+                    </div>
+                </div>
+
                 <a href="pricing.html">Pricing</a>
                 <a href="calculator.html">Calculator</a>
                 <a href="contact.html">Contact</a>
-                <a class="nav-cta" href="login.html">Log In</a>
             </nav>
         </div>
     </header>
@@ -78,8 +93,7 @@
                                 name="message" required
                                 placeholder="Tell us a little about your project and requirements"></textarea></div>
                     </div><button class="btn" type="submit">SEND ENQUIRY ↗</button>
-                    <p class="notice">Demo form only: connect this form to your email, Formspree, or backend before
-                        going live. No message is sent yet.</p>
+                    <p class="notice">Demo form data will be sent directly to WhatsApp.</p>
                     <p class="form-status notice" aria-live="polite"></p>
                 </form>
             </div>
@@ -88,14 +102,14 @@
     <footer class="footer">
         <div class="wrap footer-grid">
             <div><a class="logo" href="index.html"><span
-                        class="logo-icon">W</span><span><strong>WellLogs</strong><small>DATA SOLUTION</small></span></a>
+                            class="logo-icon">W</span><span><strong>WellLogs</strong><small>DATA SOLUTION</small></span></a>
                 <p>Practical well-log data services and subsurface support for technical teams and projects.</p>
             </div>
             <div>
                 <h4>Explore</h4>
                 <div class="footer-links"><a href="products.html">Products</a><a href="solutions.html">Solutions</a><a
-                        href="custom-design.html">Custom Design</a><a href="about.html">About Us</a><a
-                        href="contact.html">Contact</a></div>
+                            href="custom-design.html">Custom Design</a><a href="about.html">About Us</a><a
+    href="contact.html">Contact</a></div>
             </div>
             <div>
                 <h4>Our Capabilities</h4>
@@ -116,6 +130,35 @@
         </div>
     </footer>
     <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form[data-demo-form]");
+            if (form) {
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    const name = form.querySelector("#name").value;
+                    const company = form.querySelector("#company").value || "N/A";
+                    const email = form.querySelector("#email").value;
+                    const phone = form.querySelector("#phone").value || "N/A";
+                    const service = form.querySelector("#service").value;
+                    const messageText = form.querySelector("#message").value;
+
+                    const whatsappNumber = "919105851039"; // Country code 91 + 9105851039
+
+                    const text = `New WellLogs Project Enquiry%0A` +
+                                 `Name: ${encodeURIComponent(name)}%0A` +
+                                 `Company: ${encodeURIComponent(company)}%0A` +
+                                 `Email: ${encodeURIComponent(email)}%0A` +
+                                 `Phone: ${encodeURIComponent(phone)}%0A` +
+                                 `Service: ${encodeURIComponent(service)}%0A` +
+                                 `Message: ${encodeURIComponent(messageText)}`;
+
+                    window.open(`https://wa.me/${whatsappNumber}?text=${text}`, "_blank");
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
